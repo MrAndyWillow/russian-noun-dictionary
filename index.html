@@ -29,9 +29,20 @@
   }
 </script>
 
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>
+  function cdnFail(lib) {
+    var root = document.getElementById("root");
+    if (root && !root.dataset.mounted) {
+      root.innerHTML =
+        '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;color:#e8e8ea;text-align:center">' +
+        '<div><p style="font-size:18px;margin-bottom:8px">Не удалось загрузить «' + lib + '» с CDN</p>' +
+        '<p style="font-size:13px;color:#9a9aa1;max-width:420px">Проверьте интернет-соединение и настройки DNS, затем обновите страницу. Если проблема повторяется — возможно, домен cdnjs.cloudflare.com заблокирован вашим провайдером или DNS-резолвером.</p></div></div>';
+    }
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin onerror="cdnFail('React')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin onerror="cdnFail('ReactDOM')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.28.4/babel.min.js" onerror="cdnFail('Babel')"></script>
 
 <style>
   html, body { background: #0a0a0c; }
@@ -54,7 +65,9 @@
 </head>
 <body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
 
-<div id="root"></div>
+<div id="root">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;color:#6b6b73;font-family:sans-serif;font-size:14px;">Загрузка приложения…</div>
+</div>
 
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
@@ -868,7 +881,20 @@ function App() {
   );
 }
 
+window.addEventListener("error", function (e) {
+  const root = document.getElementById("root");
+  if (root && !root.dataset.mounted) {
+    root.innerHTML =
+      '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;color:#e8e8ea;text-align:center">' +
+      '<div><p style="font-size:18px;margin-bottom:8px">Ошибка при запуске приложения</p>' +
+      '<p style="font-size:13px;color:#9a9aa1;max-width:480px;font-family:monospace;white-space:pre-wrap">' + (e.message || e) + '</p></div></div>';
+  }
+});
+
+document.getElementById("root").dataset.mounted = "0";
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+document.getElementById("root").dataset.mounted = "1";
 </script>
 </body>
 </html>
+
