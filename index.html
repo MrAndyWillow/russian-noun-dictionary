@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="ru" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Эрудит · Словарь существительных</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: '#0a0a0c', 900: '#121215', 850: '#17171b', 800: '#1d1d22', 700: '#27272e', 600: '#34343d', 500: '#48484f', 400: '#6b6b73', 300: '#9a9aa1', 200: '#c7c7cc', 100: '#e8e8ea' },
+          amber: { 50:'#fdf6ec', 100:'#fbe8c8', 200:'#f6d293', 300:'#f0b75a', 400:'#e8a13a', 500:'#d4891f', 600:'#b06f17', 700:'#8a5614', 800:'#6b4413', 900:'#5a3a14' },
+        },
+        fontFamily: {
+          display: ['Fraunces', 'serif'],
+          sans: ['Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+      },
+    },
+  }
+</script>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  html, body { background: #0a0a0c; }
+  ::selection { background: #d4891f; color: #0a0a0c; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #121215; }
+  ::-webkit-scrollbar-thumb { background: #27272e; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #34343d; }
+  .letter-rule::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #27272e, transparent);
+    margin-left: 0.75rem;
+  }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0);} }
+  .fade-up { animation: fadeUp .25s ease-out both; }
+  textarea:focus, input:focus { outline: none; }
+</style>
+</head>
+<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
+
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+/* ============================================================
+   ЛИНГВИСТИЧЕСКОЕ ЯДРО
+   Эвристический разбор без серверной морфологии: набор правил
+   покрывает основную массу текстов, но не претендует на 100%
+   точность — поэтому перед добавлением в словарь предусмотрен
+   экран проверки, где каждое слово можно поправить или убрать.
+   ============================================================ */
+
+const VOWELS = "аеёиоуыэюя";
+const isVowel = (ch) => VOWELS.includes(ch);
+
+const PREPOSITIONS = ["в","во","на","с","со","к","ко","у","о","об","обо","от","ото","до","из","изо","для","без","безо","под","подо","надо","над","за","по","при","про","через","чрез","между","меж","среди","посреди","перед","передо","пред","предо","около","вокруг","внутри","внутрь","вместо","кроме","сквозь","ради","насчет","насчёт","вдоль","возле","против","согласно","благодаря","ввиду","вследствие","путем","путём","посредством","несмотря","спустя","вблизи","напротив","накануне"];
+
+const CONJ_PRON_PARTICLES = ["и","а","но","или","либо","да","что","чтобы","как","когда","если","хотя","пока","покуда","словно","будто","точно","ибо","зато","также","тоже","притом","причем","причём","не","ни","же","ли","бы","вот","вон","это","эта","этот","эти","тот","та","то","те","такой","такая","такое","такие","который","которая","которое","которые","кто","что-то","кто-то","что-нибудь","кто-нибудь","что-либо","кто-либо","весь","вся","всё","все","всякий","всякая","всякое","всякие","каждый","каждая","каждое","каждые","любой","любая","любое","любые","сам","сама","само","сами","самый","самая","самое","самые","я","ты","он","она","оно","мы","вы","они","меня","тебя","его","её","ее","нас","вас","их","ему","ей","нам","вам","им","мной","мною","тобой","тобою","нами","вами","ими","мой","моя","моё","мое","мои","твой","твоя","твоё","твое","твои","свой","своя","своё","свое","свои","наш","наша","наше","наши","ваш","ваша","ваше","ваши","себя","себе","собой","собою","кого","кому","кем","чего","чему","чем","некто","нечто","никто","ничто","никого","ничего","никому","ничему","некий","некая","некое","некие","некоторые","несколько","столько","сколько","иной","иная","иное","иные","другой","другая","другое","другие","оба","обе"];
+
+const NUMERALS = ["один","одна","одно","одни","два","две","три","четыре","пять","шесть","семь","восемь","девять","десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать","двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто","сто","двести","триста","четыреста","пятьсот","шестьсот","семьсот","восемьсот","девятьсот","тысяча","миллион","миллиард","первый","первая","первое","первые","второй","вторая","второе","вторые","третий","третья","третье","третьи"];
+
+const ADVERBS = ["очень","сильно","слабо","быстро","медленно","хорошо","плохо","сегодня","завтра","вчера","послезавтра","позавчера","здесь","там","тут","туда","сюда","оттуда","отсюда","везде","всюду","нигде","куда","откуда","всегда","никогда","иногда","часто","редко","потом","затем","сейчас","теперь","опять","снова","вновь","вместе","отдельно","далеко","близко","рядом","вдруг","сразу","сначала","наконец","действительно","конечно","наверное","может","возможно","примерно","почти","совсем","совершенно","особенно","например","итак","однако","впрочем","кстати","вообще","видимо","пожалуй","вероятно","разумеется","естественно","якобы","именно","только","лишь","даже","ведь","уж","уже","ещё","еще","более","менее","больше","меньше","гораздо","намного","слишком","достаточно","довольно","чуть","едва","вовсе","отнюдь","тогда","затем","потому","поэтому","зачем","почему","отчего"];
+
+const VERB_FORMS = ["быть","есть","был","была","было","были","будет","будут","буду","будешь","будем","будете","стать","стал","стала","стало","стали","станет","станут","станем","может","могут","можно","нельзя","нужно","надо","должен","должна","должно","должны","хочет","хотят","хочу","хочешь","хотим","хотите","хотел","хотела","хотели","говорит","говорят","говорю","говоришь","говорим","говорите","сказал","сказала","сказали","скажет","скажут","знает","знают","знаю","знаешь","знаем","знаете","знал","знала","знали","думает","думают","думаю","думал","думала","думали","видит","видят","вижу","видел","видела","видели","делает","делают","делаю","делал","делала","делали","сделал","сделала","сделали","имеет","имеют","имею","имел","имела","имели","идёт","идут","иду","шёл","шла","шли","пошёл","пошла","пошли","живёт","живут","жил","жила","жили","даёт","дают","дал","дала","дали","берёт","берут","взял","взяла","взяли","ест","едят","ем","пил","пила","пили","пьёт","пьют","стоит","стоят","сидит","сидят","лежит","лежат","смотрит","смотрят","смотрю","слушает","слушают","понимает","понимают","нравится","нравятся","кажется","казалось","является","являются","оказался","оказалась","оказалось","стало","происходит","происходят","случилось","случается","начал","начала","начали","начинает","начинают","закончил","закончила","закончили","заканчивает","заканчивают","писал","писала","писали","пишет","пишут","читал","читала","читали","читает","читают","сказать","писать","читать","делать","знать","видеть","думать","хотеть","мочь","идти","ходить","говорить","смотреть","слушать","понимать","казаться","являться","происходить","начинать","заканчивать"];
+
+const STOPWORDS = new Set(
+  [...PREPOSITIONS, ...CONJ_PRON_PARTICLES, ...NUMERALS, ...ADVERBS, ...VERB_FORMS].map(w => w.toLowerCase())
+);
+
+// Окончания, практически однозначно указывающие на прилагательное
+// (среди существительных в норме не встречаются)
+const ADJ_SUFFIXES = ["ого","его","ому","ему","ыми","ими","ую","юю","ый","ой","ая","яя","ое","ее","ые"];
+
+function isAdjective(word) {
+  if (word.length < 4) return false;
+  return ADJ_SUFFIXES.some(suf => word.endsWith(suf) && word.length - suf.length >= 2);
+}
+
+function isVerbForm(word) {
+  if (STOPWORDS.has(word)) return true;
+  if (word.endsWith("ться") || word.endsWith("тся") || word.endsWith("тись")) return true;
+  if (word.endsWith("ть") && word.length > 3) {
+    const before = word[word.length - 3];
+    if (isVowel(before)) return true; // делать, видеть, говорить — гласная перед "ть"
+  }
+  if (["ущий","ющий","ащий","ящий","вший","емый","имый","нный"].some(s => word.endsWith(s) && word.length > s.length + 2)) {
+    return true; // причастия
+  }
+  return false;
+}
+
+// Свод правил приведения к именительному падежу единственного числа.
+// Проверяется от самых длинных/специфичных окончаний к коротким.
+const LEMMA_RULES = [
+  ["иями", "ия"], ["иях", "ия"], ["иям", "ия"],
+  ["ями", "я"], ["ами", "а"],
+  ["иев", "ий"], ["ией", "ия"], ["ием", "ие"], ["ии", "ия"],
+  ["ах", "а"], ["ях", "я"], ["ям", "я"], ["ам", "а"],
+  ["ев", "й"], ["ов", ""], ["ей", ""],
+  ["ёй", "я"], ["ой", "а"],
+  ["ию", "ия"], ["ью", "ь"],
+  ["ом", ""], ["ем", ""],
+  ["ы", ""], ["и", ""],
+];
+
+const IRREGULAR = {
+  "люди": "человек", "людей": "человек", "людям": "человек", "людьми": "человек", "людях": "человек",
+  "дети": "ребёнок", "детей": "ребёнок", "детям": "ребёнок", "детьми": "ребёнок", "детях": "ребёнок",
+  "друзья": "друг", "друзей": "друг", "друзьям": "друг", "друзьями": "друг",
+  "братья": "брат", "братьев": "брат", "сыновья": "сын", "сыновей": "сын",
+  "листья": "лист", "листьев": "лист", "деревья": "дерево", "деревьев": "дерево",
+  "имена": "имя", "времена": "время", "племена": "племя",
+  "чудеса": "чудо", "небеса": "небо", "телеса": "тело",
+  "уши": "ухо", "ушей": "ухо", "глаза": "глаз", "глазами": "глаз",
+  "плечи": "плечо", "плечами": "плечо", "колени": "колено", "коленями": "колено",
+  "соседи": "сосед", "соседей": "сосед", "граждане": "гражданин", "граждан": "гражданин",
+  "крестьяне": "крестьянин", "крестьян": "крестьянин", "англичане": "англичанин",
+  "годы": "год", "года": "год", "лет": "год", "часы": "час",
+};
+
+function lemmatize(word) {
+  if (IRREGULAR[word]) return IRREGULAR[word];
+  if (word.length <= 3) return word;
+  for (const [suf, rep] of LEMMA_RULES) {
+    if (word.endsWith(suf) && word.length - suf.length >= 2) {
+      return word.slice(0, word.length - suf.length) + rep;
+    }
+  }
+  return word;
+}
+
+function analyzeText(rawText, existingDict) {
+  const sentences = rawText.split(/(?<=[.!?…])\s+/).filter(Boolean);
+  const tokenRe = /[А-Яа-яЁё]+(?:-[А-Яа-яЁё]+)?/g;
+  const results = new Map(); // lemma -> { lemma, originals:Set }
+
+  for (const sentence of sentences) {
+    let match;
+    let isFirst = true;
+    tokenRe.lastIndex = 0;
+    while ((match = tokenRe.exec(sentence)) !== null) {
+      const original = match[0];
+      const isSentenceStart = isFirst;
+      isFirst = false;
+
+      if (/^[А-ЯЁ]+$/.test(original) && original.length > 1) continue; // АББРЕВИАТУРА
+      const isCapitalized = /^[А-ЯЁ]/.test(original) && !/^[А-ЯЁ]+$/.test(original);
+      if (isCapitalized && !isSentenceStart) continue; // вероятно, имя собственное/фамилия
+
+      const word = original.toLowerCase();
+      if (word.length < 2) continue;
+      if (STOPWORDS.has(word)) continue;
+      if (isAdjective(word)) continue;
+      if (isVerbForm(word)) continue;
+      if (!/[а-яё]/.test(word)) continue;
+
+      const lemma = lemmatize(word);
+      if (lemma.length < 2) continue;
+      if (STOPWORDS.has(lemma) || isAdjective(lemma)) continue;
+
+      if (!results.has(lemma)) results.set(lemma, { lemma, originals: new Set() });
+      results.get(lemma).originals.add(word !== lemma ? word : null);
+    }
+  }
+
+  const list = [...results.values()].map(({ lemma, originals }) => {
+    const o = [...originals].filter(Boolean);
+    return {
+      lemma,
+      source: o.length ? o[0] : lemma,
+      inDictionary: existingDict.has(lemma),
+    };
+  });
+
+  list.sort((a, b) => a.lemma.localeCompare(b.lemma, "ru"));
+  return list;
+}
+
+/* ============================================================
+   UI-ПРИМИТИВЫ В ДУХЕ shadcn/ui
+   ============================================================ */
+
+function Button({ children, variant = "default", size = "md", className = "", ...props }) {
+  const base = "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950";
+  const variants = {
+    default: "bg-amber-400 text-ink-950 hover:bg-amber-300 shadow-sm shadow-amber-900/30",
+    secondary: "bg-ink-800 text-ink-100 hover:bg-ink-700 border border-ink-700",
+    ghost: "text-ink-300 hover:text-ink-100 hover:bg-ink-800",
+    outline: "border border-ink-700 text-ink-200 hover:bg-ink-800 hover:border-ink-600",
+    destructive: "bg-red-950/40 text-red-300 border border-red-900/60 hover:bg-red-950/70",
+  };
+  const sizes = { sm: "h-8 px-3 text-xs", md: "h-10 px-4 text-sm", lg: "h-12 px-6 text-base" };
+  return <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>{children}</button>;
+}
+
+function Card({ children, className = "", ...props }) {
+  return <div className={`rounded-2xl border border-ink-800 bg-ink-900/70 backdrop-blur-sm ${className}`} {...props}>{children}</div>;
+}
+
+function Badge({ children, tone = "default" }) {
+  const tones = {
+    default: "bg-ink-800 text-ink-300 border-ink-700",
+    amber: "bg-amber-400/10 text-amber-300 border-amber-400/30",
+    muted: "bg-ink-850 text-ink-500 border-ink-700",
+  };
+  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}>{children}</span>;
+}
+
+const Icon = {
+  Book: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+  Sparkles: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>,
+  Download: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>,
+  Upload: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 21V9m0 0l-4 4m4-4l4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>,
+  Check: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M20 6L9 17l-5-5"/></svg>,
+  X: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M18 6L6 18M6 6l12 12"/></svg>,
+  Trash: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0l-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>,
+  Search: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>,
+  Clipboard: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>,
+  Info: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
+  Link: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><path d="M8 12h8"/></svg>,
+  Alert: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M10.3 3.86L1.8 18a1.5 1.5 0 0 0 1.3 2.25h17.8a1.5 1.5 0 0 0 1.3-2.25L13.7 3.86a1.5 1.5 0 0 0-2.6 0z"/><path d="M12 9v4M12 17h.01"/></svg>,
+  Cloud: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4-2A5 5 0 0 0 6.5 19h11z"/><path d="M12 12v6m0-6l-2.5 2.5M12 12l2.5 2.5"/></svg>,
+  Settings: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+};
+
+const DICT_KEY = "russian_words_nouns";
+const FILE_NAME = "russian_words_nouns.txt";
+const FS_SUPPORTED = typeof window !== "undefined" && "showOpenFilePicker" in window;
+
+/* Лёгкая обёртка над IndexedDB — хранит FileSystemFileHandle между сессиями
+   (localStorage/window.storage не умеют хранить такие объекты). */
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("erudit-dict-fs", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("handles");
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbSet(key, value) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("handles", "readwrite");
+    tx.objectStore("handles").put(value, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("handles", "readonly");
+    const req = tx.objectStore("handles").get(key);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function App() {
+  const [dictionary, setDictionary] = useState(new Set());
+  const [loaded, setLoaded] = useState(false);
+  const [inputText, setInputText] = useState("");
+  const [candidates, setCandidates] = useState([]); // {lemma, source, inDictionary, checked, edited}
+  const [filter, setFilter] = useState("");
+  const [toast, setToast] = useState(null);
+  const [fileHandle, setFileHandle] = useState(null);
+  const [fileStatus, setFileStatus] = useState("none"); // none | reconnect | connected | saving | error
+  const [exportName, setExportName] = useState(FILE_NAME);
+  const [showSettings, setShowSettings] = useState(false);
+  const [ghConfig, setGhConfig] = useState({ owner: "", repo: "", branch: "main", path: FILE_NAME });
+  const [ghToken, setGhToken] = useState("");
+  const [ghStatus, setGhStatus] = useState("none"); // none | connected | saving | error
+  const [ghForm, setGhForm] = useState(null); // черновик настроек в открытой панели
+  const fileInputRef = useRef(null);
+
+  // загрузка словаря из персистентного хранилища артефакта
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await window.storage.get(DICT_KEY, false);
+        if (res && res.value) {
+          const arr = JSON.parse(res.value);
+          setDictionary(new Set(arr));
+        }
+      } catch (e) { /* ключа ещё нет — начинаем с пустого словаря */ }
+
+      try {
+        const nameRes = await window.storage.get("dict-export-name", false);
+        if (nameRes && nameRes.value) setExportName(nameRes.value);
+      } catch (e) { /* имя по умолчанию */ }
+
+      try {
+        const ghRes = await window.storage.get("gh-config", false);
+        if (ghRes && ghRes.value) {
+          const cfg = JSON.parse(ghRes.value);
+          setGhConfig(cfg);
+          const token = await idbGet("ghToken");
+          if (token) {
+            setGhToken(token);
+            setGhStatus("connected");
+          }
+        }
+      } catch (e) { /* публикация в GitHub не настроена */ }
+
+      if (FS_SUPPORTED) {
+        try {
+          const handle = await idbGet("dictFileHandle");
+          if (handle) {
+            const perm = await handle.queryPermission({ mode: "readwrite" });
+            if (perm === "granted") {
+              setFileHandle(handle);
+              setFileStatus("connected");
+              await syncFromHandle(handle, true);
+            } else {
+              setFileHandle(handle);
+              setFileStatus("reconnect");
+            }
+          }
+        } catch (e) { /* доступ к диску недоступен в этом контексте */ }
+      }
+
+      setLoaded(true);
+    })();
+  }, []);
+
+  const persist = useCallback(async (set) => {
+    try {
+      await window.storage.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))), false);
+    } catch (e) { console.error("Не удалось сохранить словарь:", e); }
+  }, []);
+
+  const writeToFile = useCallback(async (handle, set) => {
+    if (!handle) return;
+    try {
+      setFileStatus("saving");
+      const perm = await handle.queryPermission({ mode: "readwrite" });
+      if (perm !== "granted") { setFileStatus("reconnect"); return; }
+      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
+      const writable = await handle.createWritable();
+      await writable.write(text);
+      await writable.close();
+      setFileStatus("connected");
+    } catch (e) {
+      console.error("Не удалось записать в файл:", e);
+      setFileStatus("error");
+    }
+  }, []);
+
+  const utf8ToBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+
+  const pushToGitHub = useCallback(async (set) => {
+    if (!ghToken || !ghConfig.owner || !ghConfig.repo) return;
+    setGhStatus("saving");
+    const apiUrl = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/${encodeURIComponent(ghConfig.path)}`;
+    const headers = { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json" };
+    try {
+      let sha = null;
+      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(ghConfig.branch)}`, { headers });
+      if (getRes.ok) {
+        sha = (await getRes.json()).sha;
+      } else if (getRes.status !== 404) {
+        const err = await getRes.json().catch(() => ({}));
+        throw new Error(err.message || `Не удалось прочитать файл (${getRes.status})`);
+      }
+      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
+      const putRes = await fetch(apiUrl, {
+        method: "PUT",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Словарь: ${set.size} слов`,
+          content: utf8ToBase64(text),
+          branch: ghConfig.branch,
+          ...(sha ? { sha } : {}),
+        }),
+      });
+      if (!putRes.ok) {
+        const err = await putRes.json().catch(() => ({}));
+        throw new Error(err.message || `Ошибка записи (${putRes.status})`);
+      }
+      setGhStatus("connected");
+    } catch (e) {
+      console.error("GitHub sync:", e);
+      setGhStatus("error");
+      showToast(`GitHub: ${e.message}`);
+    }
+  }, [ghToken, ghConfig]);
+
+  // единая точка изменения словаря: обновляет state, кэш в браузере и,
+  // если подключён локальный файл и/или репозиторий GitHub — пишет туда же
+  const saveDictionary = useCallback(async (next, handleOverride) => {
+    setDictionary(next);
+    await persist(next);
+    const h = handleOverride !== undefined ? handleOverride : fileHandle;
+    if (h) await writeToFile(h, next);
+    if (ghToken && ghConfig.owner && ghConfig.repo) await pushToGitHub(next);
+  }, [fileHandle, persist, writeToFile, ghToken, ghConfig, pushToGitHub]);
+
+  const syncFromHandle = useCallback(async (handle, silent) => {
+    try {
+      const file = await handle.getFile();
+      const text = await file.text();
+      const words = text.split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
+      setDictionary(prev => {
+        const merged = new Set(prev);
+        words.forEach(w => merged.add(w));
+        persist(merged);
+        writeToFile(handle, merged);
+        return merged;
+      });
+      if (!silent) showToast("Словарь синхронизирован с файлом на диске");
+    } catch (e) {
+      console.error(e);
+      setFileStatus("error");
+    }
+  }, [persist, writeToFile]);
+
+  const connectFile = async () => {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: "Текстовый файл", accept: { "text/plain": [".txt"] } }],
+      });
+      const perm = await handle.requestPermission({ mode: "readwrite" });
+      if (perm !== "granted") { showToast("Нет разрешения на запись в файл"); return; }
+      await idbSet("dictFileHandle", handle);
+      setFileHandle(handle);
+      setFileStatus("connected");
+      updateExportName(handle.name);
+      await syncFromHandle(handle, false);
+    } catch (e) {
+      if (e.name !== "AbortError") { console.error(e); showToast("Не удалось подключить файл"); }
+    }
+  };
+
+  const reconnectFile = async () => {
+    if (!fileHandle) return;
+    try {
+      const perm = await fileHandle.requestPermission({ mode: "readwrite" });
+      if (perm === "granted") {
+        setFileStatus("connected");
+        await syncFromHandle(fileHandle, false);
+      } else {
+        showToast("Доступ к файлу не подтверждён");
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const disconnectFile = async () => {
+    setFileHandle(null);
+    setFileStatus("none");
+    await idbSet("dictFileHandle", null);
+  };
+
+  const openSettings = () => {
+    setGhForm({ ...ghConfig, token: ghToken });
+    setShowSettings(true);
+  };
+
+  const saveGhSettings = async () => {
+    const owner = ghForm.owner.trim();
+    const repo = ghForm.repo.trim();
+    const branch = (ghForm.branch || "main").trim();
+    const path = (ghForm.path || FILE_NAME).trim();
+    const token = (ghForm.token || "").trim();
+    const cfg = { owner, repo, branch, path };
+    setGhConfig(cfg);
+    await window.storage.set("gh-config", JSON.stringify(cfg), false);
+    if (token) {
+      setGhToken(token);
+      await idbSet("ghToken", token);
+    }
+    setGhStatus(owner && repo && (token || ghToken) ? "connected" : "none");
+    setShowSettings(false);
+    showToast("Настройки публикации сохранены");
+  };
+
+  const disconnectGh = async () => {
+    setGhToken("");
+    setGhConfig({ owner: "", repo: "", branch: "main", path: FILE_NAME });
+    setGhStatus("none");
+    await window.storage.set("gh-config", "", false);
+    await idbSet("ghToken", null);
+    setShowSettings(false);
+  };
+
+  const showToast = (text) => {
+    setToast(text);
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => setToast(null), 2600);
+  };
+
+  const handleAnalyze = () => {
+    if (!inputText.trim()) return;
+    const found = analyzeText(inputText, dictionary);
+    setCandidates(found.map(f => ({ ...f, checked: !f.inDictionary, edited: f.lemma })));
+  };
+
+  const newCount = useMemo(() => candidates.filter(c => !c.inDictionary).length, [candidates]);
+  const checkedCount = useMemo(() => candidates.filter(c => c.checked).length, [candidates]);
+
+  const toggleCandidate = (idx) => {
+    setCandidates(prev => prev.map((c, i) => i === idx ? { ...c, checked: !c.checked } : c));
+  };
+  const editCandidate = (idx, value) => {
+    setCandidates(prev => prev.map((c, i) => i === idx ? { ...c, edited: value } : c));
+  };
+  const selectAll = (val) => setCandidates(prev => prev.map(c => ({ ...c, checked: val })));
+
+  const commitCandidates = async () => {
+    const toAdd = candidates.filter(c => c.checked).map(c => c.edited.trim().toLowerCase()).filter(Boolean);
+    if (!toAdd.length) return;
+    const next = new Set(dictionary);
+    toAdd.forEach(w => next.add(w));
+    await saveDictionary(next);
+    setCandidates([]);
+    setInputText("");
+    showToast(fileHandle ? `Добавлено и сохранено в файл: ${toAdd.length}` : `Добавлено слов: ${toAdd.length}`);
+  };
+
+  const removeWord = async (word) => {
+    const next = new Set(dictionary);
+    next.delete(word);
+    await saveDictionary(next);
+  };
+
+  const updateExportName = useCallback(async (name) => {
+    const clean = (name || FILE_NAME).trim() || FILE_NAME;
+    setExportName(clean);
+    try { await window.storage.set("dict-export-name", clean, false); } catch (e) {}
+  }, []);
+
+  const handleDownload = () => {
+    const text = [...dictionary].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = exportName || FILE_NAME;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`Файл «${exportName}» скачан`);
+  };
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const words = text.split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
+    const next = new Set(dictionary);
+    let added = 0;
+    words.forEach(w => { if (!next.has(w)) { next.add(w); added++; } });
+    await saveDictionary(next);
+    showToast(`Импортировано из файла: ${added} новых слов`);
+    e.target.value = "";
+  };
+
+  const grouped = useMemo(() => {
+    const words = [...dictionary].filter(w => w.includes(filter.trim().toLowerCase())).sort((a, b) => a.localeCompare(b, "ru"));
+    const map = new Map();
+    for (const w of words) {
+      const letter = w[0].toUpperCase();
+      if (!map.has(letter)) map.set(letter, []);
+      map.get(letter).push(w);
+    }
+    return [...map.entries()];
+  }, [dictionary, filter]);
+
+  return (
+    <div className="min-h-screen">
+      {/* HEADER */}
+      <header className="border-b border-ink-800/80 sticky top-0 z-20 bg-ink-950/85 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300">
+              <Icon.Book className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="font-display text-xl font-semibold tracking-tight text-ink-50">Эрудит</h1>
+              <div className="flex items-center gap-1 -mt-0.5">
+                <span className="text-xs text-ink-400">словарь существительных ·</span>
+                <input
+                  value={exportName}
+                  onChange={(e) => setExportName(e.target.value)}
+                  onBlur={(e) => updateExportName(e.target.value)}
+                  title="Имя файла, под которым словарь скачивается (и которым подписан подключённый файл)"
+                  className="text-xs text-ink-300 bg-transparent border-b border-dashed border-ink-700 hover:border-ink-500 focus:border-amber-400/60 w-44 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {FS_SUPPORTED && fileStatus === "none" && (
+              <Button variant="outline" size="sm" onClick={connectFile}>
+                <Icon.Link className="h-3.5 w-3.5" /> Подключить файл на диске
+              </Button>
+            )}
+            {FS_SUPPORTED && fileStatus === "connected" && (
+              <button onClick={disconnectFile} title="Нажмите, чтобы отключить автосохранение" className="group">
+                <Badge tone="amber">
+                  <Icon.Check className="h-3 w-3 mr-1" /> {fileHandle?.name} · автосохранение
+                </Badge>
+              </button>
+            )}
+            {FS_SUPPORTED && fileStatus === "saving" && (
+              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> Сохранение…</Badge>
+            )}
+            {FS_SUPPORTED && fileStatus === "reconnect" && (
+              <Button variant="outline" size="sm" onClick={reconnectFile} className="!text-amber-300 !border-amber-400/40">
+                <Icon.Alert className="h-3.5 w-3.5" /> Переподключить {fileHandle?.name}
+              </Button>
+            )}
+            {FS_SUPPORTED && fileStatus === "error" && (
+              <Button variant="outline" size="sm" onClick={reconnectFile} className="!text-red-300 !border-red-900/60">
+                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка записи · повторить
+              </Button>
+            )}
+
+            {ghStatus === "connected" && (
+              <Badge tone="amber"><Icon.Cloud className="h-3 w-3 mr-1" /> {ghConfig.owner}/{ghConfig.repo} · публикуется</Badge>
+            )}
+            {ghStatus === "saving" && (
+              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> Публикация…</Badge>
+            )}
+            {ghStatus === "error" && (
+              <Button variant="outline" size="sm" onClick={() => pushToGitHub(dictionary)} className="!text-red-300 !border-red-900/60">
+                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка публикации · повторить
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={openSettings} title="Настроить публикацию в GitHub">
+              <Icon.Settings className="h-3.5 w-3.5" />
+            </Button>
+
+            <input ref={fileInputRef} type="file" accept=".txt" className="hidden" onChange={handleImportFile} />
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Icon.Upload className="h-3.5 w-3.5" /> Загрузить файл
+            </Button>
+            <Button size="sm" onClick={handleDownload} disabled={!dictionary.size}>
+              <Icon.Download className="h-3.5 w-3.5" /> Скачать словарь
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+
+        {/* STATS */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <Card className="px-6 py-5">
+            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Слов в словаре</p>
+            <p className="font-display text-4xl font-semibold text-ink-50 tabular-nums">{loaded ? dictionary.size.toLocaleString("ru") : "—"}</p>
+          </Card>
+          <Card className="px-6 py-5">
+            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Найдено для импорта</p>
+            <p className="font-display text-4xl font-semibold text-amber-300 tabular-nums">{newCount}</p>
+          </Card>
+          <Card className="px-6 py-5 hidden md:block">
+            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Выбрано к добавлению</p>
+            <p className="font-display text-4xl font-semibold text-ink-50 tabular-nums">{checkedCount}</p>
+          </Card>
+        </div>
+
+        {/* INPUT */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display text-lg font-medium text-ink-50">Добавить текст</h2>
+            <Badge tone="muted">слово, фраза или целый отрывок</Badge>
+          </div>
+          <textarea
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Вставьте слово, список слов или текст — алгоритм найдёт в нём существительные…"
+            rows={6}
+            className="w-full resize-y rounded-xl bg-ink-950 border border-ink-700 px-4 py-3 text-sm leading-relaxed text-ink-100 placeholder:text-ink-500 focus:border-amber-400/60 transition-colors font-sans"
+          />
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-ink-500 flex items-center gap-1.5">
+              <Icon.Info className="h-3.5 w-3.5 shrink-0" />
+              Разбор — эвристический; список найденных слов нужно будет проверить перед сохранением.
+            </p>
+            <Button onClick={handleAnalyze} disabled={!inputText.trim()}>
+              <Icon.Sparkles className="h-4 w-4" /> Анализировать
+            </Button>
+          </div>
+        </Card>
+
+        {/* REVIEW */}
+        {candidates.length > 0 && (
+          <Card className="p-6 fade-up">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+              <div>
+                <h2 className="font-display text-lg font-medium text-ink-50">Проверка перед добавлением</h2>
+                <p className="text-xs text-ink-400 mt-0.5">Найдено уникальных слов: {candidates.length} · новых: {newCount}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => selectAll(true)}>Выбрать все</Button>
+                <Button variant="ghost" size="sm" onClick={() => selectAll(false)}>Снять все</Button>
+              </div>
+            </div>
+
+            <div className="max-h-96 overflow-y-auto rounded-xl border border-ink-800 divide-y divide-ink-800">
+              {candidates.map((c, idx) => (
+                <div key={c.lemma + idx} className={`flex items-center gap-3 px-4 py-2.5 ${c.inDictionary ? "opacity-50" : ""}`}>
+                  <button
+                    onClick={() => toggleCandidate(idx)}
+                    className={`h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-colors ${c.checked ? "bg-amber-400 border-amber-400 text-ink-950" : "border-ink-600 text-transparent"}`}
+                  >
+                    <Icon.Check className="h-3.5 w-3.5" />
+                  </button>
+                  <input
+                    value={c.edited}
+                    onChange={(e) => editCandidate(idx, e.target.value)}
+                    className="flex-1 bg-transparent font-mono text-sm text-ink-100 focus:outline-none focus:text-amber-200 border-b border-transparent focus:border-amber-400/40 py-0.5"
+                  />
+                  {c.source && c.source !== c.lemma && (
+                    <span className="text-[11px] text-ink-500 font-mono shrink-0">из «{c.source}»</span>
+                  )}
+                  {c.inDictionary && <Badge tone="muted">уже есть</Badge>}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 mt-4">
+              <Button variant="ghost" onClick={() => setCandidates([])}>Отменить</Button>
+              <Button onClick={commitCandidates} disabled={!checkedCount}>
+                <Icon.Check className="h-4 w-4" /> Добавить в словарь ({checkedCount})
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* DICTIONARY */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+            <h2 className="font-display text-lg font-medium text-ink-50">Словарь</h2>
+            <div className="relative w-full sm:w-64">
+              <Icon.Search className="h-4 w-4 text-ink-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                placeholder="Поиск по словарю…"
+                className="w-full bg-ink-950 border border-ink-700 rounded-lg pl-9 pr-3 h-9 text-sm focus:border-amber-400/60 transition-colors"
+              />
+            </div>
+          </div>
+
+          {!loaded ? (
+            <p className="text-sm text-ink-500 py-8 text-center">Загрузка…</p>
+          ) : grouped.length === 0 ? (
+            <div className="py-14 text-center">
+              <p className="text-ink-400 text-sm">{dictionary.size === 0 ? "Словарь пока пуст — добавьте первые слова выше." : "По запросу ничего не найдено."}</p>
+            </div>
+          ) : (
+            <div className="space-y-5 max-h-[32rem] overflow-y-auto pr-1">
+              {grouped.map(([letter, words]) => (
+                <div key={letter}>
+                  <div className="flex items-center mb-2 letter-rule">
+                    <span className="font-display text-amber-300 text-sm font-semibold">{letter}</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-1.5">
+                    {words.map(w => (
+                      <div key={w} className="group flex items-center justify-between font-mono text-sm text-ink-200 hover:text-ink-50 rounded px-1.5 py-0.5 hover:bg-ink-850">
+                        <span className="truncate">{w}</span>
+                        <button onClick={() => removeWord(w)} className="opacity-0 group-hover:opacity-100 text-ink-500 hover:text-red-400 transition-opacity shrink-0 ml-1">
+                          <Icon.Trash className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <p className="text-center text-xs text-ink-600 pb-4">
+          {ghStatus === "connected"
+            ? `Каждое изменение словаря сразу коммитится в ${ghConfig.owner}/${ghConfig.repo} (${ghConfig.path}) — это работает и на iPad. `
+            : `Откройте настройки (значок шестерёнки) и подключите репозиторий Эрудита на GitHub — тогда словарь будет публиковаться туда автоматически, в том числе с iPad. `}
+          {FS_SUPPORTED && (fileStatus === "none"
+            ? "На компьютере дополнительно можно «Подключить файл на диске» для прямой записи без сети."
+            : `Локальный файл «${fileHandle?.name}» синхронизируется автоматически.`)}
+        </p>
+      </main>
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-ink-800 border border-ink-700 text-ink-100 text-sm px-4 py-2.5 rounded-xl shadow-xl fade-up z-50">
+          {toast}
+        </div>
+      )}
+
+      {showSettings && ghForm && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowSettings(false)}>
+          <Card className="w-full max-w-md p-6 fade-up" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-display text-lg font-medium text-ink-50 flex items-center gap-2">
+                <Icon.Cloud className="h-4 w-4 text-amber-300" /> Публикация в GitHub
+              </h3>
+              <button onClick={() => setShowSettings(false)} className="text-ink-500 hover:text-ink-200">
+                <Icon.X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-xs text-ink-400 mb-4">
+              Каждое добавление или удаление слова будет коммититься прямо в файл словаря репозитория Эрудита. Работает в любом браузере, включая Safari на iPad.
+            </p>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-ink-400 mb-1 block">Владелец / организация</label>
+                  <input value={ghForm.owner} onChange={(e) => setGhForm({ ...ghForm, owner: e.target.value })}
+                    placeholder="MrAndyWillow" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
+                </div>
+                <div>
+                  <label className="text-xs text-ink-400 mb-1 block">Репозиторий</label>
+                  <input value={ghForm.repo} onChange={(e) => setGhForm({ ...ghForm, repo: e.target.value })}
+                    placeholder="erudit" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-ink-400 mb-1 block">Ветка</label>
+                  <input value={ghForm.branch} onChange={(e) => setGhForm({ ...ghForm, branch: e.target.value })}
+                    placeholder="main" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
+                </div>
+                <div>
+                  <label className="text-xs text-ink-400 mb-1 block">Путь к файлу</label>
+                  <input value={ghForm.path} onChange={(e) => setGhForm({ ...ghForm, path: e.target.value })}
+                    placeholder="russian_words_nouns.txt" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-ink-400 mb-1 block">Personal Access Token (fine-grained, доступ только к Contents этого репозитория)</label>
+                <input value={ghForm.token} onChange={(e) => setGhForm({ ...ghForm, token: e.target.value })}
+                  type="password" placeholder="github_pat_…" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
+                <p className="text-[11px] text-ink-500 mt-1.5 leading-relaxed">
+                  Токен хранится только локально на этом устройстве (не синхронизируется). Создайте его на странице
+                  github.com/settings/tokens?type=beta — ограничьте доступ только этим репозиторием и правом «Contents: Read and write».
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-5">
+              <Button variant="ghost" size="sm" onClick={disconnectGh} disabled={!ghToken && !ghConfig.owner}>Отключить</Button>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setShowSettings(false)}>Отмена</Button>
+                <Button size="sm" onClick={saveGhSettings} disabled={!ghForm.owner || !ghForm.repo}>Сохранить</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
