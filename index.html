@@ -286,6 +286,24 @@ async function idbGet(key) {
   });
 }
 
+/* ============================================================
+   ХРАНИЛИЩЕ: localStorage — работает в любом браузере,
+   включая GitHub Pages, локальные файлы и Safari на iPad.
+   Все вызовы обёрнуты в try/catch: приватный режим или
+   переполнение диска не роняют приложение.
+   ============================================================ */
+const ls = {
+  get(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
+  },
+  remove(key) {
+    try { localStorage.removeItem(key); return true; } catch (e) { return false; }
+  },
+};
+
 function App() {
   const [dictionary, setDictionary] = useState(new Set());
   const [loaded, setLoaded] = useState(false);
@@ -307,34 +325,36 @@ function App() {
   const [ghForm, setGhForm] = useState(null); // черновик настроек в открытой панели
   const fileInputRef = useRef(null);
 
-  // загрузка словаря из персистентного хранилища артефакта
+  // загрузка из localStorage при старте
   useEffect(() => {
     (async () => {
       try {
-        const res = await window.storage.get(DICT_KEY, false);
-        if (res && res.value) {
-          const arr = JSON.parse(res.value);
+        const raw = ls.get(DICT_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
           setDictionary(new Set(arr));
         }
-      } catch (e) { /* ключа ещё нет — начинаем с пустого словаря */ }
+      } catch (e) { /* словаря ещё нет */ }
 
       try {
-        const nameRes = await window.storage.get("dict-export-name", false);
-        if (nameRes && nameRes.value) setExportName(nameRes.value);
+        const name = ls.get("dict-export-name");
+        if (name) setExportName(name);
       } catch (e) { /* имя по умолчанию */ }
 
       try {
-        const ghRes = await window.storage.get("gh-config", false);
-        if (ghRes && ghRes.value) {
-          const cfg = JSON.parse(ghRes.value);
-          setGhConfig(cfg);
-          const token = await idbGet("ghToken");
-          if (token) {
-            setGhToken(token);
-            setGhStatus("connected");
+        const ghRaw = ls.get("gh-config");
+        if (ghRaw) {
+          const cfg = JSON.parse(ghRaw);
+          if (cfg && cfg.owner) {
+            setGhConfig(cfg);
+            const token = await idbGet("ghToken");
+            if (token) {
+              setGhToken(token);
+              setGhStatus("connected");
+            }
           }
         }
-      } catch (e) { /* публикация в GitHub не настроена */ }
+      } catch (e) { /* GitHub не настроен */ }
 
       if (FS_SUPPORTED) {
         try {
@@ -357,9 +377,9 @@ function App() {
     })();
   }, []);
 
-  const persist = useCallback(async (set) => {
+  const persist = useCallback((set) => {
     try {
-      await window.storage.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))), false);
+      ls.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))));
     } catch (e) { console.error("Не удалось сохранить словарь:", e); }
   }, []);
 
@@ -556,7 +576,7 @@ function App() {
     setGhConfig(cfg);
     setGhToken(token);
     setGhStatus("connected");
-    await window.storage.set("gh-config", JSON.stringify(cfg), false);
+    ls.set("gh-config", JSON.stringify(cfg));
     await idbSet("ghToken", token);
     showToast(`GitHub подключён: ${owner}/${repo}`);
   };
@@ -565,7 +585,7 @@ function App() {
     setGhToken("");
     setGhConfig({ owner: "", repo: "", branch: "main", path: FILE_NAME });
     setGhStatus("none");
-    await window.storage.set("gh-config", "", false);
+    ls.set("gh-config", "");
     await idbSet("ghToken", null);
     setShowSettings(false);
   };
@@ -643,10 +663,10 @@ function App() {
     showToast(removed ? `Удалено слов: ${removed}` : "Ни одно из слов не найдено в словаре");
   };
 
-  const updateExportName = useCallback(async (name) => {
+  const updateExportName = useCallback((name) => {
     const clean = (name || FILE_NAME).trim() || FILE_NAME;
     setExportName(clean);
-    try { await window.storage.set("dict-export-name", clean, false); } catch (e) {}
+    ls.set("dict-export-name", clean);
   }, []);
 
   const handleDownload = () => {
@@ -1053,4 +1073,3 @@ document.getElementById("root").dataset.mounted = "1";
 </script>
 </body>
 </html>
-
