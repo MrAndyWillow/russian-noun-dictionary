@@ -1,1063 +1,1569 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru" class="dark">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Эрудит · Словарь существительных</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Эрудит Помощник Pro</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Эрудит Pro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#020617">
+  
+  <!-- Иконка приложения (Base64) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjU5ZTBiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDVhMyAzIDAgMSAwLTUuOTk3LjEyNSA0IDQgMCAwIDAtNS4yMjQgNS4yMjRBNCA0IDAgMCAwIDQuMyAxOS43YTQgNCAwIDAgMCA1LjIyNC01LjIyNEE0IDQgMCAwIDAgMTQgMTIuMUwyMiA0Ii8+PHBhdGggZD0iTTE5LjIgMTdMMTIgMTJNMTkuMiAxMmwtMy4yLTMuMiIvPjwvc3ZnPg==">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          ink: { 950: '#0a0a0c', 900: '#121215', 850: '#17171b', 800: '#1d1d22', 700: '#27272e', 600: '#34343d', 500: '#48484f', 400: '#6b6b73', 300: '#9a9aa1', 200: '#c7c7cc', 100: '#e8e8ea' },
-          amber: { 50:'#fdf6ec', 100:'#fbe8c8', 200:'#f6d293', 300:'#f0b75a', 400:'#e8a13a', 500:'#d4891f', 600:'#b06f17', 700:'#8a5614', 800:'#6b4413', 900:'#5a3a14' },
-        },
-        fontFamily: {
-          display: ['Fraunces', 'serif'],
-          sans: ['Inter', 'sans-serif'],
-          mono: ['"JetBrains Mono"', 'monospace'],
-        },
-      },
-    },
-  }
-</script>
-
-<script>
-  function cdnFail(lib) {
-    var root = document.getElementById("root");
-    if (root && !root.dataset.mounted) {
-      root.innerHTML =
-        '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;color:#e8e8ea;text-align:center">' +
-        '<div><p style="font-size:18px;margin-bottom:8px">Не удалось загрузить «' + lib + '» с CDN</p>' +
-        '<p style="font-size:13px;color:#9a9aa1;max-width:420px">Проверьте интернет-соединение и настройки DNS, затем обновите страницу. Если проблема повторяется — возможно, домен cdnjs.cloudflare.com заблокирован вашим провайдером или DNS-резолвером.</p></div></div>';
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
     }
-  }
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin onerror="cdnFail('React')"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin onerror="cdnFail('ReactDOM')"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.28.4/babel.min.js" onerror="cdnFail('Babel')"></script>
+    .font-mono-custom {
+      font-family: 'Fira Code', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .wood-tile {
+      background: radial-gradient(circle, rgba(63,43,21,1) 0%, rgba(41,27,12,1) 100%);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 4px 6px -1px rgba(0,0,0,0.5);
+    }
+    .glow-green { box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+    .glow-blue { box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
+    .glow-orange { box-shadow: 0 0 12px rgba(249, 115, 22, 0.4); }
+    .glow-red { box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
 
-<style>
-  html, body { background: #0a0a0c; }
-  ::selection { background: #d4891f; color: #0a0a0c; }
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: #121215; }
-  ::-webkit-scrollbar-thumb { background: #27272e; border-radius: 8px; }
-  ::-webkit-scrollbar-thumb:hover { background: #34343d; }
-  .letter-rule::before {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, #27272e, transparent);
-    margin-left: 0.75rem;
-  }
-  @keyframes fadeUp { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0);} }
-  .fade-up { animation: fadeUp .25s ease-out both; }
-  textarea:focus, input:focus { outline: none; }
-</style>
+    .board-grid-row {
+      display: grid;
+      grid-template-columns: 24px repeat(15, minmax(0, 1fr));
+      gap: 3px;
+      align-items: center;
+    }
+    .board-cell-btn {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-radius: 0.25rem;
+      transition: all 150ms ease;
+      outline: none;
+    }
+  </style>
 </head>
-<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
-
-<div id="root">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;color:#6b6b73;font-family:sans-serif;font-size:14px;">Загрузка приложения…</div>
-</div>
-
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo, useRef, useCallback } = React;
-
-/* ============================================================
-   ЛИНГВИСТИЧЕСКОЕ ЯДРО
-   Эвристический разбор без серверной морфологии: набор правил
-   покрывает основную массу текстов, но не претендует на 100%
-   точность — поэтому перед добавлением в словарь предусмотрен
-   экран проверки, где каждое слово можно поправить или убрать.
-   ============================================================ */
-
-const VOWELS = "аеёиоуыэюя";
-const isVowel = (ch) => VOWELS.includes(ch);
-
-const PREPOSITIONS = ["в","во","на","с","со","к","ко","у","о","об","обо","от","ото","до","из","изо","для","без","безо","под","подо","надо","над","за","по","при","про","через","чрез","между","меж","среди","посреди","перед","передо","пред","предо","около","вокруг","внутри","внутрь","вместо","кроме","сквозь","ради","насчет","насчёт","вдоль","возле","против","согласно","благодаря","ввиду","вследствие","путем","путём","посредством","несмотря","спустя","вблизи","напротив","накануне"];
-
-const CONJ_PRON_PARTICLES = ["и","а","но","или","либо","да","что","чтобы","как","когда","если","хотя","пока","покуда","словно","будто","точно","ибо","зато","также","тоже","притом","причем","причём","не","ни","же","ли","бы","вот","вон","это","эта","этот","эти","тот","та","то","те","такой","такая","такое","такие","который","которая","которое","которые","кто","что-то","кто-то","что-нибудь","кто-нибудь","что-либо","кто-либо","весь","вся","всё","все","всякий","всякая","всякое","всякие","каждый","каждая","каждое","каждые","любой","любая","любое","любые","сам","сама","само","сами","самый","самая","самое","самые","я","ты","он","она","оно","мы","вы","они","меня","тебя","его","её","ее","нас","вас","их","ему","ей","нам","вам","им","мной","мною","тобой","тобою","нами","вами","ими","мой","моя","моё","мое","мои","твой","твоя","твоё","твое","твои","свой","своя","своё","свое","свои","наш","наша","наше","наши","ваш","ваша","ваше","ваши","себя","себе","собой","собою","кого","кому","кем","чего","чему","чем","некто","нечто","никто","ничто","никого","ничего","никому","ничему","некий","некая","некое","некие","некоторые","несколько","столько","сколько","иной","иная","иное","иные","другой","другая","другое","другие","оба","обе"];
-
-const NUMERALS = ["один","одна","одно","одни","два","две","три","четыре","пять","шесть","семь","восемь","девять","десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать","двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто","сто","двести","триста","четыреста","пятьсот","шестьсот","семьсот","восемьсот","девятьсот","тысяча","миллион","миллиард","первый","первая","первое","первые","второй","вторая","второе","вторые","третий","третья","третье","третьи"];
-
-const ADVERBS = ["очень","сильно","слабо","быстро","медленно","хорошо","плохо","сегодня","завтра","вчера","послезавтра","позавчера","здесь","там","тут","туда","сюда","оттуда","отсюда","везде","всюду","нигде","куда","откуда","всегда","никогда","иногда","часто","редко","потом","затем","сейчас","теперь","опять","снова","вновь","вместе","отдельно","далеко","близко","рядом","вдруг","сразу","сначала","наконец","действительно","конечно","наверное","может","возможно","примерно","почти","совсем","совершенно","особенно","например","итак","однако","впрочем","кстати","вообще","видимо","пожалуй","вероятно","разумеется","естественно","якобы","именно","только","лишь","даже","ведь","уж","уже","ещё","еще","более","менее","больше","меньше","гораздо","намного","слишком","достаточно","довольно","чуть","едва","вовсе","отнюдь","тогда","затем","потому","поэтому","зачем","почему","отчего"];
-
-const VERB_FORMS = ["быть","есть","был","была","было","были","будет","будут","буду","будешь","будем","будете","стать","стал","стала","стало","стали","станет","станут","станем","может","могут","можно","нельзя","нужно","надо","должен","должна","должно","должны","хочет","хотят","хочу","хочешь","хотим","хотите","хотел","хотела","хотели","говорит","говорят","говорю","говоришь","говорим","говорите","сказал","сказала","сказали","скажет","скажут","знает","знают","знаю","знаешь","знаем","знаете","знал","знала","знали","думает","думают","думаю","думал","думала","думали","видит","видят","вижу","видел","видела","видели","делает","делают","делаю","делал","делала","делали","сделал","сделала","сделали","имеет","имеют","имею","имел","имела","имели","идёт","идут","иду","шёл","шла","шли","пошёл","пошла","пошли","живёт","живут","жил","жила","жили","даёт","дают","дал","дала","дали","берёт","берут","взял","взяла","взяли","ест","едят","ем","пил","пила","пили","пьёт","пьют","стоит","стоят","сидит","сидят","лежит","лежат","смотрит","смотрят","смотрю","слушает","слушают","понимает","понимают","нравится","нравятся","кажется","казалось","является","являются","оказался","оказалась","оказалось","стало","происходит","происходят","случилось","случается","начал","начала","начали","начинает","начинают","закончил","закончила","закончили","заканчивает","заканчивают","писал","писала","писали","пишет","пишут","читал","читала","читали","читает","читают","сказать","писать","читать","делать","знать","видеть","думать","хотеть","мочь","идти","ходить","говорить","смотреть","слушать","понимать","казаться","являться","происходить","начинать","заканчивать"];
-
-const STOPWORDS = new Set(
-  [...PREPOSITIONS, ...CONJ_PRON_PARTICLES, ...NUMERALS, ...ADVERBS, ...VERB_FORMS].map(w => w.toLowerCase())
-);
-
-// Окончания, практически однозначно указывающие на прилагательное
-// (среди существительных в норме не встречаются)
-const ADJ_SUFFIXES = ["ого","его","ому","ему","ыми","ими","ую","юю","ый","ой","ая","яя","ое","ее","ые"];
-
-function isAdjective(word) {
-  if (word.length < 4) return false;
-  return ADJ_SUFFIXES.some(suf => word.endsWith(suf) && word.length - suf.length >= 2);
-}
-
-function isVerbForm(word) {
-  if (STOPWORDS.has(word)) return true;
-  if (word.endsWith("ться") || word.endsWith("тся") || word.endsWith("тись")) return true;
-  if (word.endsWith("ть") && word.length > 3) {
-    const before = word[word.length - 3];
-    if (isVowel(before)) return true; // делать, видеть, говорить — гласная перед "ть"
-  }
-  if (["ущий","ющий","ащий","ящий","вший","емый","имый","нный"].some(s => word.endsWith(s) && word.length > s.length + 2)) {
-    return true; // причастия
-  }
-  return false;
-}
-
-// Свод правил приведения к именительному падежу единственного числа.
-// Проверяется от самых длинных/специфичных окончаний к коротким.
-const LEMMA_RULES = [
-  ["иями", "ия"], ["иях", "ия"], ["иям", "ия"],
-  ["ями", "я"], ["ами", "а"],
-  ["иев", "ий"], ["ией", "ия"], ["ием", "ие"], ["ии", "ия"],
-  ["ах", "а"], ["ях", "я"], ["ям", "я"], ["ам", "а"],
-  ["ев", "й"], ["ов", ""], ["ей", ""],
-  ["ёй", "я"], ["ой", "а"],
-  ["ию", "ия"], ["ью", "ь"],
-  ["ом", ""], ["ем", ""],
-  ["ы", ""], ["и", ""],
-];
-
-const IRREGULAR = {
-  "люди": "человек", "людей": "человек", "людям": "человек", "людьми": "человек", "людях": "человек",
-  "дети": "ребёнок", "детей": "ребёнок", "детям": "ребёнок", "детьми": "ребёнок", "детях": "ребёнок",
-  "друзья": "друг", "друзей": "друг", "друзьям": "друг", "друзьями": "друг",
-  "братья": "брат", "братьев": "брат", "сыновья": "сын", "сыновей": "сын",
-  "листья": "лист", "листьев": "лист", "деревья": "дерево", "деревьев": "дерево",
-  "имена": "имя", "времена": "время", "племена": "племя",
-  "чудеса": "чудо", "небеса": "небо", "телеса": "тело",
-  "уши": "ухо", "ушей": "ухо", "глаза": "глаз", "глазами": "глаз",
-  "плечи": "плечо", "плечами": "плечо", "колени": "колено", "коленями": "колено",
-  "соседи": "сосед", "соседей": "сосед", "граждане": "гражданин", "граждан": "гражданин",
-  "крестьяне": "крестьянин", "крестьян": "крестьянин", "англичане": "англичанин",
-  "годы": "год", "года": "год", "лет": "год", "часы": "час",
-};
-
-function lemmatize(word) {
-  if (IRREGULAR[word]) return IRREGULAR[word];
-  if (word.length <= 3) return word;
-  for (const [suf, rep] of LEMMA_RULES) {
-    if (word.endsWith(suf) && word.length - suf.length >= 2) {
-      return word.slice(0, word.length - suf.length) + rep;
-    }
-  }
-  return word;
-}
-
-function analyzeText(rawText, existingDict) {
-  const sentences = rawText.split(/(?<=[.!?…])\s+/).filter(Boolean);
-  const tokenRe = /[А-Яа-яЁё]+(?:-[А-Яа-яЁё]+)?/g;
-  const results = new Map(); // lemma -> { lemma, originals:Set }
-
-  for (const sentence of sentences) {
-    let match;
-    let isFirst = true;
-    tokenRe.lastIndex = 0;
-    while ((match = tokenRe.exec(sentence)) !== null) {
-      const original = match[0];
-      const isSentenceStart = isFirst;
-      isFirst = false;
-
-      if (/^[А-ЯЁ]+$/.test(original) && original.length > 1) continue; // АББРЕВИАТУРА
-      const isCapitalized = /^[А-ЯЁ]/.test(original) && !/^[А-ЯЁ]+$/.test(original);
-      if (isCapitalized && !isSentenceStart) continue; // вероятно, имя собственное/фамилия
-
-      const word = original.toLowerCase();
-      if (word.length < 2) continue;
-      if (STOPWORDS.has(word)) continue;
-      if (isAdjective(word)) continue;
-      if (isVerbForm(word)) continue;
-      if (!/[а-яё]/.test(word)) continue;
-
-      const lemma = lemmatize(word);
-      if (lemma.length < 2) continue;
-      if (STOPWORDS.has(lemma) || isAdjective(lemma)) continue;
-
-      if (!results.has(lemma)) results.set(lemma, { lemma, originals: new Set() });
-      results.get(lemma).originals.add(word !== lemma ? word : null);
-    }
-  }
-
-  const list = [...results.values()].map(({ lemma, originals }) => {
-    const o = [...originals].filter(Boolean);
-    return {
-      lemma,
-      source: o.length ? o[0] : lemma,
-      inDictionary: existingDict.has(lemma),
-    };
-  });
-
-  list.sort((a, b) => a.lemma.localeCompare(b.lemma, "ru"));
-  return list;
-}
-
-/* ============================================================
-   UI-ПРИМИТИВЫ В ДУХЕ shadcn/ui
-   ============================================================ */
-
-function Button({ children, variant = "default", size = "md", className = "", ...props }) {
-  const base = "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950";
-  const variants = {
-    default: "bg-amber-400 text-ink-950 hover:bg-amber-300 shadow-sm shadow-amber-900/30",
-    secondary: "bg-ink-800 text-ink-100 hover:bg-ink-700 border border-ink-700",
-    ghost: "text-ink-300 hover:text-ink-100 hover:bg-ink-800",
-    outline: "border border-ink-700 text-ink-200 hover:bg-ink-800 hover:border-ink-600",
-    destructive: "bg-red-950/40 text-red-300 border border-red-900/60 hover:bg-red-950/70",
-  };
-  const sizes = { sm: "h-8 px-3 text-xs", md: "h-10 px-4 text-sm", lg: "h-12 px-6 text-base" };
-  return <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>{children}</button>;
-}
-
-function Card({ children, className = "", ...props }) {
-  return <div className={`rounded-2xl border border-ink-800 bg-ink-900/70 backdrop-blur-sm ${className}`} {...props}>{children}</div>;
-}
-
-function Badge({ children, tone = "default" }) {
-  const tones = {
-    default: "bg-ink-800 text-ink-300 border-ink-700",
-    amber: "bg-amber-400/10 text-amber-300 border-amber-400/30",
-    muted: "bg-ink-850 text-ink-500 border-ink-700",
-  };
-  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}>{children}</span>;
-}
-
-const Icon = {
-  Book: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
-  Sparkles: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>,
-  Download: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>,
-  Upload: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 21V9m0 0l-4 4m4-4l4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>,
-  Check: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M20 6L9 17l-5-5"/></svg>,
-  X: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M18 6L6 18M6 6l12 12"/></svg>,
-  Trash: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0l-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>,
-  Search: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>,
-  Clipboard: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>,
-  Info: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
-  Link: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><path d="M8 12h8"/></svg>,
-  Alert: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M10.3 3.86L1.8 18a1.5 1.5 0 0 0 1.3 2.25h17.8a1.5 1.5 0 0 0 1.3-2.25L13.7 3.86a1.5 1.5 0 0 0-2.6 0z"/><path d="M12 9v4M12 17h.01"/></svg>,
-  Cloud: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4-2A5 5 0 0 0 6.5 19h11z"/><path d="M12 12v6m0-6l-2.5 2.5M12 12l2.5 2.5"/></svg>,
-  Settings: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-};
-
-const DICT_KEY = "russian_words_nouns";
-const FILE_NAME = "russian_words_nouns.txt";
-const FS_SUPPORTED = typeof window !== "undefined" && "showOpenFilePicker" in window;
-
-/* Лёгкая обёртка над IndexedDB — хранит FileSystemFileHandle между сессиями
-   (localStorage/window.storage не умеют хранить такие объекты). */
-function idbOpen() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open("erudit-dict-fs", 1);
-    req.onupgradeneeded = () => req.result.createObjectStore("handles");
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-async function idbSet(key, value) {
-  const db = await idbOpen();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("handles", "readwrite");
-    tx.objectStore("handles").put(value, key);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-async function idbGet(key) {
-  const db = await idbOpen();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("handles", "readonly");
-    const req = tx.objectStore("handles").get(key);
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-/* ============================================================
-   ХРАНИЛИЩЕ: localStorage — работает в любом браузере,
-   включая GitHub Pages, локальные файлы и Safari на iPad.
-   Все вызовы обёрнуты в try/catch: приватный режим или
-   переполнение диска не роняют приложение.
-   ============================================================ */
-const ls = {
-  get(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
-  },
-  set(key, value) {
-    try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
-  },
-  remove(key) {
-    try { localStorage.removeItem(key); return true; } catch (e) { return false; }
-  },
-};
-
-function App() {
-  // ── Словарь ──────────────────────────────────────────────────────────────
-  const [dictionary, setDictionary] = useState(() => {
-    try {
-      const raw = ls.get(DICT_KEY);
-      return raw ? new Set(JSON.parse(raw)) : new Set();
-    } catch { return new Set(); }
-  });
-  const [loaded, setLoaded] = useState(false);
-
-  // ── UI ───────────────────────────────────────────────────────────────────
-  const [inputText, setInputText] = useState("");
-  const [candidates, setCandidates] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [toast, setToast] = useState(null);
-  const [deleteMode, setDeleteMode] = useState(false);
-  const [deleteSelected, setDeleteSelected] = useState(new Set());
-  const [deleteText, setDeleteText] = useState("");
-  const [showDeletePanel, setShowDeletePanel] = useState(false);
-
-  // ── Локальный файл (File System Access API, только Chrome/Edge) ──────────
-  const [fileHandle, setFileHandle] = useState(null);
-  const [fileStatus, setFileStatus] = useState("none");
-  const [exportName, setExportName] = useState(() => ls.get("dict-export-name") || FILE_NAME);
-
-  // ── GitHub — инициализация СИНХРОННАЯ из localStorage ────────────────────
-  const [ghToken,  setGhToken]  = useState(() => ls.get("gh_token")  || "");
-  const [ghOwner,  setGhOwner]  = useState(() => ls.get("gh_owner")  || "");
-  const [ghRepo,   setGhRepo]   = useState(() => ls.get("gh_repo")   || "");
-  const [ghBranch, setGhBranch] = useState(() => ls.get("gh_branch") || "main");
-  const [ghPath,   setGhPath]   = useState(() => ls.get("gh_path")   || FILE_NAME);
-  const [ghSha,    setGhSha]    = useState(() => ls.get("gh_sha")    || "");
-  const [ghStatus, setGhStatus] = useState("none"); // none|loading|connected|syncing|error
-  const [showSettings, setShowSettings] = useState(false);
-  const [ghForm,   setGhForm]   = useState(null);
-
-  const fileInputRef = useRef(null);
-  const ghConnected = ghToken && ghOwner && ghRepo;
-
-  // Сохраняем каждый параметр GitHub сразу при изменении
-  useEffect(() => { ls.set("gh_token",  ghToken);  }, [ghToken]);
-  useEffect(() => { ls.set("gh_owner",  ghOwner);  }, [ghOwner]);
-  useEffect(() => { ls.set("gh_repo",   ghRepo);   }, [ghRepo]);
-  useEffect(() => { ls.set("gh_branch", ghBranch); }, [ghBranch]);
-  useEffect(() => { ls.set("gh_path",   ghPath);   }, [ghPath]);
-  useEffect(() => { ls.set("gh_sha",    ghSha);    }, [ghSha]);
-
-  // ── Кодирование/декодирование UTF-8 ←→ base64 ────────────────────────────
-  const b64encode = (str) => {
-    const bytes = new TextEncoder().encode(str);
-    let bin = ""; bytes.forEach(b => { bin += String.fromCharCode(b); });
-    return btoa(bin);
-  };
-  const b64decode = (b64) => {
-    const bin = atob(b64.replace(/\s/g, ""));
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new TextDecoder("utf-8").decode(bytes);
-  };
-
-  const ghUrl = () => {
-    const p = ghPath.trim().replace(/^\/+/, "").split("/").map(encodeURIComponent).join("/");
-    return `https://api.github.com/repos/${ghOwner.trim()}/${ghRepo.trim()}/contents/${p}`;
-  };
-  const ghHdrs = (token) => ({
-    Authorization: `token ${(token || ghToken).trim()}`,
-    Accept: "application/vnd.github.v3+json",
-  });
-
-  // ── Pull — загрузка файла из GitHub ──────────────────────────────────────
-  const pullFromGitHub = useCallback(async (quiet = false) => {
-    if (!ghToken || !ghOwner || !ghRepo) return;
-    if (!quiet) setGhStatus("loading");
-    try {
-      const metaRes = await fetch(`${ghUrl()}?ref=${encodeURIComponent(ghBranch)}&_t=${Date.now()}`, {
-        headers: ghHdrs(),
-      });
-      if (metaRes.status === 404) {
-        setGhStatus("connected"); setGhSha("");
-        if (!quiet) showToast("Файл ещё не создан в репозитории");
-        return;
-      }
-      if (!metaRes.ok) {
-        const body = await metaRes.json().catch(() => ({}));
-        if (metaRes.status === 401) throw new Error("Токен недействителен (401)");
-        if (metaRes.status === 403) throw new Error("Нет доступа к репозиторию (403)");
-        throw new Error(body.message || `Ошибка ${metaRes.status}`);
-      }
-      const meta = await metaRes.json();
-      setGhSha(meta.sha);
-
-      let text = "";
-      if (meta.size < 900000 && meta.content) {
-        // небольшой файл — контент уже в ответе
-        text = b64decode(meta.content);
-      } else {
-        // большой файл (>900KB) — используем Git Blobs API
-        const blobRes = await fetch(
-          `https://api.github.com/repos/${ghOwner.trim()}/${ghRepo.trim()}/git/blobs/${meta.sha}`,
-          { headers: ghHdrs() }
-        );
-        if (!blobRes.ok) throw new Error(`Ошибка загрузки большого файла (${blobRes.status})`);
-        const blob = await blobRes.json();
-        text = b64decode(blob.content);
-      }
-
-      const words = text.split(/[\r\n]+/)
-        .map(w => w.trim().toLowerCase())
-        .filter(w => w && /^[а-яёa-z0-9\-]+$/.test(w));
-
-      setDictionary(new Set(words));
-      ls.set(DICT_KEY, JSON.stringify(words));
-      setGhStatus("connected");
-      setLoaded(true);
-      if (!quiet) showToast(`Загружено из GitHub: ${words.length} слов`);
-    } catch (e) {
-      console.error("GitHub pull:", e);
-      setGhStatus("error");
-      let msg = e.message;
-      if (msg.includes("Failed to fetch")) msg = "Нет доступа к api.github.com — проверьте сеть/DNS";
-      if (!quiet) showToast(`GitHub: ${msg}`);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ghToken, ghOwner, ghRepo, ghBranch, ghPath]);
-
-  // ── Push — запись файла в GitHub ─────────────────────────────────────────
-  const pushToGitHub = useCallback(async (set) => {
-    if (!ghToken || !ghOwner || !ghRepo) return;
-    setGhStatus("syncing");
-    try {
-      // Всегда берём свежий sha перед записью
-      let sha = ghSha;
-      const getRes = await fetch(`${ghUrl()}?ref=${encodeURIComponent(ghBranch)}&_t=${Date.now()}`, {
-        headers: ghHdrs(),
-      });
-      if (getRes.ok) { const d = await getRes.json(); sha = d.sha; setGhSha(d.sha); }
-
-      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-      const putRes = await fetch(ghUrl(), {
-        method: "PUT",
-        headers: { ...ghHdrs(), "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: `dict: ${set.size} words`,
-          content: b64encode(text),
-          branch: ghBranch,
-          ...(sha ? { sha } : {}),
-        }),
-      });
-      if (!putRes.ok) {
-        const body = await putRes.json().catch(() => ({}));
-        throw new Error(body.message || `Ошибка записи (${putRes.status})`);
-      }
-      const data = await putRes.json();
-      if (data?.content?.sha) setGhSha(data.content.sha);
-      setGhStatus("connected");
-    } catch (e) {
-      console.error("GitHub push:", e);
-      setGhStatus("error");
-      showToast(`GitHub: ${e.message}`);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ghToken, ghOwner, ghRepo, ghBranch, ghPath, ghSha]);
-
-  // ── Auto-pull при старте если настройки уже есть ─────────────────────────
-  useEffect(() => {
-    const hasGh = ghToken && ghOwner && ghRepo;
-    if (hasGh) {
-      pullFromGitHub(true).then(() => setLoaded(true));
-    } else {
-      setLoaded(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // ── File System Access API (Chrome/Edge на компьютере) ────────────────────
-  useEffect(() => {
-    if (!FS_SUPPORTED) return;
-    (async () => {
-      try {
-        const handle = await idbGet("dictFileHandle");
-        if (handle) {
-          const perm = await handle.queryPermission({ mode: "readwrite" });
-          setFileHandle(handle);
-          setFileStatus(perm === "granted" ? "connected" : "reconnect");
-          if (perm === "granted") await syncFromHandle(handle, true);
-        }
-      } catch (e) { /* нет доступа */ }
-    })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const persist = (set) => {
-    ls.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))));
-  };
-
-  const writeToFile = async (handle, set) => {
-    if (!handle) return;
-    try {
-      setFileStatus("saving");
-      const perm = await handle.queryPermission({ mode: "readwrite" });
-      if (perm !== "granted") { setFileStatus("reconnect"); return; }
-      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-      const writable = await handle.createWritable();
-      await writable.write(text); await writable.close();
-      setFileStatus("connected");
-    } catch (e) { console.error(e); setFileStatus("error"); }
-  };
-
-  const syncFromHandle = async (handle, silent) => {
-    try {
-      const file = await handle.getFile();
-      const words = (await file.text()).split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
-      const merged = new Set(words);
-      setDictionary(merged); persist(merged);
-      if (!silent) showToast("Словарь синхронизирован с файлом на диске");
-    } catch (e) { console.error(e); setFileStatus("error"); }
-  };
-
-  const connectFile = async () => {
-    try {
-      const [handle] = await window.showOpenFilePicker({
-        types: [{ description: "Текстовый файл", accept: { "text/plain": [".txt"] } }],
-      });
-      const perm = await handle.requestPermission({ mode: "readwrite" });
-      if (perm !== "granted") { showToast("Нет разрешения на запись"); return; }
-      await idbSet("dictFileHandle", handle);
-      setFileHandle(handle); setFileStatus("connected");
-      updateExportName(handle.name);
-      await syncFromHandle(handle, false);
-    } catch (e) { if (e.name !== "AbortError") showToast("Не удалось подключить файл"); }
-  };
-
-  const reconnectFile = async () => {
-    if (!fileHandle) return;
-    const perm = await fileHandle.requestPermission({ mode: "readwrite" }).catch(() => "denied");
-    if (perm === "granted") { setFileStatus("connected"); await syncFromHandle(fileHandle, false); }
-    else showToast("Доступ к файлу не подтверждён");
-  };
-
-  const disconnectFile = async () => {
-    setFileHandle(null); setFileStatus("none");
-    await idbSet("dictFileHandle", null);
-  };
-
-  // Сохраняем настройки GitHub — без async-проверки (убирает чёрный экран).
-  // Валидация происходит при auto-pull: если токен неверный — status станет error.
-  const saveGhSettings = () => {
-    if (!ghForm) return;
-    const token  = (ghForm.token  || "").trim();
-    const owner  = (ghForm.owner  || "").trim();
-    const repo   = (ghForm.repo   || "").trim();
-    const branch = (ghForm.branch || "main").trim();
-    const path   = (ghForm.path   || FILE_NAME).trim();
-    if (!owner || !repo || !token) { showToast("Заполните владельца, репозиторий и токен"); return; }
-    setGhToken(token); setGhOwner(owner); setGhRepo(repo);
-    setGhBranch(branch); setGhPath(path); setGhSha("");
-    setShowSettings(false);
-    setGhStatus("loading");
-    // Сразу тянем файл с новыми настройками
-    setTimeout(() => {
-      pullFromGitHub(false).catch(e => { setGhStatus("error"); showToast(`GitHub: ${e.message}`); });
-    }, 0);
-  };
-
-  const disconnectGh = () => {
-    setGhToken(""); setGhOwner(""); setGhRepo("");
-    setGhBranch("main"); setGhPath(FILE_NAME); setGhSha("");
-    setGhStatus("none"); setShowSettings(false);
-  };
-
-  // Единая точка изменения словаря
-  const saveDictionary = async (next) => {
-    setDictionary(next);
-    persist(next);
-    if (fileHandle) await writeToFile(fileHandle, next);
-    if (ghConnected) await pushToGitHub(next);
-  };
-
-  const showToast = (text) => {
-    setToast(text);
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => setToast(null), 2600);
-  };
-
-  const handleAnalyze = () => {
-    if (!inputText.trim()) return;
-    const found = analyzeText(inputText, dictionary);
-    setCandidates(found.map(f => ({ ...f, checked: !f.inDictionary, edited: f.lemma })));
-  };
-
-  const newCount = useMemo(() => candidates.filter(c => !c.inDictionary).length, [candidates]);
-  const checkedCount = useMemo(() => candidates.filter(c => c.checked).length, [candidates]);
-
-  const toggleCandidate = (idx) => {
-    setCandidates(prev => prev.map((c, i) => i === idx ? { ...c, checked: !c.checked } : c));
-  };
-  const editCandidate = (idx, value) => {
-    setCandidates(prev => prev.map((c, i) => i === idx ? { ...c, edited: value } : c));
-  };
-  const selectAll = (val) => setCandidates(prev => prev.map(c => ({ ...c, checked: val })));
-
-  const commitCandidates = async () => {
-    const toAdd = candidates.filter(c => c.checked).map(c => c.edited.trim().toLowerCase()).filter(Boolean);
-    if (!toAdd.length) return;
-    const next = new Set(dictionary);
-    toAdd.forEach(w => next.add(w));
-    await saveDictionary(next);
-    setCandidates([]);
-    setInputText("");
-    showToast(fileHandle ? `Добавлено и сохранено в файл: ${toAdd.length}` : `Добавлено слов: ${toAdd.length}`);
-  };
-
-  const removeWord = async (word) => {
-    const next = new Set(dictionary);
-    next.delete(word);
-    await saveDictionary(next);
-  };
-
-  const toggleDeleteSelect = (word) => {
-    setDeleteSelected(prev => {
-      const next = new Set(prev);
-      if (next.has(word)) next.delete(word); else next.add(word);
-      return next;
-    });
-  };
-
-  const commitDelete = async () => {
-    if (!deleteSelected.size) return;
-    const next = new Set(dictionary);
-    deleteSelected.forEach(w => next.delete(w));
-    await saveDictionary(next);
-    showToast(`Удалено слов: ${deleteSelected.size}`);
-    setDeleteSelected(new Set());
-    setDeleteMode(false);
-  };
-
-  const bulkDeleteFromText = async () => {
-    if (!deleteText.trim()) return;
-    const words = deleteText
-      .split(/[\s,;|]+/)
-      .map(w => w.trim().toLowerCase().replace(/[^а-яёa-z0-9-]/gi, ""))
-      .filter(Boolean);
-    const next = new Set(dictionary);
-    let removed = 0;
-    words.forEach(w => { if (next.has(w)) { next.delete(w); removed++; } });
-    await saveDictionary(next);
-    setDeleteText("");
-    setShowDeletePanel(false);
-    showToast(removed ? `Удалено слов: ${removed}` : "Ни одно из слов не найдено в словаре");
-  };
-
-  const updateExportName = useCallback((name) => {
-    const clean = (name || FILE_NAME).trim() || FILE_NAME;
-    setExportName(clean);
-    ls.set("dict-export-name", clean);
-  }, []);
-
-  const handleDownload = () => {
-    const text = [...dictionary].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = exportName || FILE_NAME;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast(`Файл «${exportName}» скачан`);
-  };
-
-  const handleImportFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const text = await file.text();
-    const words = text.split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
-    const next = new Set(dictionary);
-    let added = 0;
-    words.forEach(w => { if (!next.has(w)) { next.add(w); added++; } });
-    await saveDictionary(next);
-    showToast(`Импортировано из файла: ${added} новых слов`);
-    e.target.value = "";
-  };
-
-  const grouped = useMemo(() => {
-    const words = [...dictionary].filter(w => w.includes(filter.trim().toLowerCase())).sort((a, b) => a.localeCompare(b, "ru"));
-    const map = new Map();
-    for (const w of words) {
-      const letter = w[0].toUpperCase();
-      if (!map.has(letter)) map.set(letter, []);
-      map.get(letter).push(w);
-    }
-    return [...map.entries()];
-  }, [dictionary, filter]);
-
-  return (
-    <div className="min-h-screen">
-      {/* HEADER */}
-      <header className="border-b border-ink-800/80 sticky top-0 z-20 bg-ink-950/85 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300">
-              <Icon.Book className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="font-display text-xl font-semibold tracking-tight text-ink-50">Эрудит</h1>
-              <div className="flex items-center gap-1 -mt-0.5">
-                <span className="text-xs text-ink-400">словарь существительных ·</span>
-                <input
-                  value={exportName}
-                  onChange={(e) => setExportName(e.target.value)}
-                  onBlur={(e) => updateExportName(e.target.value)}
-                  title="Имя файла, под которым словарь скачивается (и которым подписан подключённый файл)"
-                  className="text-xs text-ink-300 bg-transparent border-b border-dashed border-ink-700 hover:border-ink-500 focus:border-amber-400/60 w-44 font-mono"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {FS_SUPPORTED && fileStatus === "none" && (
-              <Button variant="outline" size="sm" onClick={connectFile}>
-                <Icon.Link className="h-3.5 w-3.5" /> Подключить файл на диске
-              </Button>
-            )}
-            {FS_SUPPORTED && fileStatus === "connected" && (
-              <button onClick={disconnectFile} title="Нажмите, чтобы отключить автосохранение" className="group">
-                <Badge tone="amber">
-                  <Icon.Check className="h-3 w-3 mr-1" /> {fileHandle?.name} · автосохранение
-                </Badge>
-              </button>
-            )}
-            {FS_SUPPORTED && fileStatus === "saving" && (
-              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> Сохранение…</Badge>
-            )}
-            {FS_SUPPORTED && fileStatus === "reconnect" && (
-              <Button variant="outline" size="sm" onClick={reconnectFile} className="!text-amber-300 !border-amber-400/40">
-                <Icon.Alert className="h-3.5 w-3.5" /> Переподключить {fileHandle?.name}
-              </Button>
-            )}
-            {FS_SUPPORTED && fileStatus === "error" && (
-              <Button variant="outline" size="sm" onClick={reconnectFile} className="!text-red-300 !border-red-900/60">
-                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка записи · повторить
-              </Button>
-            )}
-
-            {ghStatus === "connected" && (
-              <Badge tone="amber"><Icon.Check className="h-3 w-3 mr-1" /> {ghOwner}/{ghRepo}</Badge>
-            )}
-            {(ghStatus === "syncing" || ghStatus === "loading") && (
-              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> {ghStatus === "loading" ? "Загрузка…" : "Синхронизация…"}</Badge>
-            )}
-            {ghStatus === "error" && (
-              <Button variant="outline" size="sm" onClick={() => pullFromGitHub(false)} className="!text-red-300 !border-red-900/60">
-                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка · повторить pull
-              </Button>
-            )}
-            <Button variant="ghost" size="sm" onClick={() => { setGhForm({ owner: ghOwner, repo: ghRepo, branch: ghBranch, path: ghPath, token: ghToken }); setShowSettings(true); }} title="Настроить публикацию в GitHub">
-              <Icon.Settings className="h-3.5 w-3.5" />
-            </Button>
-
-            <input ref={fileInputRef} type="file" accept=".txt" className="hidden" onChange={handleImportFile} />
-            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-              <Icon.Upload className="h-3.5 w-3.5" /> Загрузить файл
-            </Button>
-            <Button size="sm" onClick={handleDownload} disabled={!dictionary.size}>
-              <Icon.Download className="h-3.5 w-3.5" /> Скачать словарь
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-6 py-8 space-y-8">
-
-        {/* STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <Card className="px-6 py-5">
-            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Слов в словаре</p>
-            <p className="font-display text-4xl font-semibold text-ink-50 tabular-nums">{loaded ? dictionary.size.toLocaleString("ru") : "—"}</p>
-          </Card>
-          <Card className="px-6 py-5">
-            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Найдено для импорта</p>
-            <p className="font-display text-4xl font-semibold text-amber-300 tabular-nums">{newCount}</p>
-          </Card>
-          <Card className="px-6 py-5 hidden md:block">
-            <p className="text-xs uppercase tracking-wider text-ink-400 mb-1">Выбрано к добавлению</p>
-            <p className="font-display text-4xl font-semibold text-ink-50 tabular-nums">{checkedCount}</p>
-          </Card>
-        </div>
-
-        {/* INPUT */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display text-lg font-medium text-ink-50">Добавить текст</h2>
-            <Badge tone="muted">слово, фраза или целый отрывок</Badge>
-          </div>
-          <textarea
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Вставьте слово, список слов или текст — алгоритм найдёт в нём существительные…"
-            rows={6}
-            className="w-full resize-y rounded-xl bg-ink-950 border border-ink-700 px-4 py-3 text-sm leading-relaxed text-ink-100 placeholder:text-ink-500 focus:border-amber-400/60 transition-colors font-sans"
-          />
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-ink-500 flex items-center gap-1.5">
-              <Icon.Info className="h-3.5 w-3.5 shrink-0" />
-              Разбор — эвристический; список найденных слов нужно будет проверить перед сохранением.
-            </p>
-            <Button onClick={handleAnalyze} disabled={!inputText.trim()}>
-              <Icon.Sparkles className="h-4 w-4" /> Анализировать
-            </Button>
-          </div>
-        </Card>
-
-        {/* REVIEW */}
-        {candidates.length > 0 && (
-          <Card className="p-6 fade-up">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-              <div>
-                <h2 className="font-display text-lg font-medium text-ink-50">Проверка перед добавлением</h2>
-                <p className="text-xs text-ink-400 mt-0.5">Найдено уникальных слов: {candidates.length} · новых: {newCount}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => selectAll(true)}>Выбрать все</Button>
-                <Button variant="ghost" size="sm" onClick={() => selectAll(false)}>Снять все</Button>
-              </div>
-            </div>
-
-            <div className="max-h-96 overflow-y-auto rounded-xl border border-ink-800 divide-y divide-ink-800">
-              {candidates.map((c, idx) => (
-                <div key={c.lemma + idx} className={`flex items-center gap-3 px-4 py-2.5 ${c.inDictionary ? "opacity-50" : ""}`}>
-                  <button
-                    onClick={() => toggleCandidate(idx)}
-                    className={`h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-colors ${c.checked ? "bg-amber-400 border-amber-400 text-ink-950" : "border-ink-600 text-transparent"}`}
-                  >
-                    <Icon.Check className="h-3.5 w-3.5" />
-                  </button>
-                  <input
-                    value={c.edited}
-                    onChange={(e) => editCandidate(idx, e.target.value)}
-                    className="flex-1 bg-transparent font-mono text-sm text-ink-100 focus:outline-none focus:text-amber-200 border-b border-transparent focus:border-amber-400/40 py-0.5"
-                  />
-                  {c.source && c.source !== c.lemma && (
-                    <span className="text-[11px] text-ink-500 font-mono shrink-0">из «{c.source}»</span>
-                  )}
-                  {c.inDictionary && <Badge tone="muted">уже есть</Badge>}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 mt-4">
-              <Button variant="ghost" onClick={() => setCandidates([])}>Отменить</Button>
-              <Button onClick={commitCandidates} disabled={!checkedCount}>
-                <Icon.Check className="h-4 w-4" /> Добавить в словарь ({checkedCount})
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* DICTIONARY */}
-        <Card className="p-6">
-          {/* Заголовок и панель управления */}
-          <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="font-display text-lg font-medium text-ink-50">Словарь</h2>
-              {deleteMode && deleteSelected.size > 0 && (
-                <Badge tone="amber">{deleteSelected.size} выбрано</Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Режим выделения */}
-              {!deleteMode ? (
-                <>
-                  <Button variant="ghost" size="sm" onClick={() => { setShowDeletePanel(p => !p); setDeleteMode(false); }}
-                    title="Массовое удаление по списку">
-                    <Icon.Trash className="h-3.5 w-3.5" /> По списку
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setDeleteMode(true); setDeleteSelected(new Set()); setShowDeletePanel(false); }}>
-                    <Icon.Trash className="h-3.5 w-3.5" /> Выбрать
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" onClick={() => { setDeleteSelected(new Set()); setDeleteMode(false); }}>Отменить</Button>
-                  <Button variant="destructive" size="sm" onClick={commitDelete} disabled={!deleteSelected.size}>
-                    <Icon.Trash className="h-3.5 w-3.5" /> Удалить ({deleteSelected.size})
-                  </Button>
-                </>
-              )}
-              <div className="relative w-48">
-                <Icon.Search className="h-4 w-4 text-ink-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Поиск…"
-                  className="w-full bg-ink-950 border border-ink-700 rounded-lg pl-9 pr-3 h-9 text-sm focus:border-amber-400/60 transition-colors"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Панель массового удаления по списку */}
-          {showDeletePanel && (
-            <div className="mb-4 p-4 rounded-xl bg-ink-950 border border-red-900/40 fade-up">
-              <p className="text-xs text-ink-400 mb-2">Вставьте слова для удаления — через пробел, запятую или с новой строки. Также можно вставить текст целиком: из него будут извлечены слова, совпадающие со словарём.</p>
-              <textarea
-                value={deleteText}
-                onChange={(e) => setDeleteText(e.target.value)}
-                placeholder="дерево, лес, вода…"
-                rows={3}
-                className="w-full resize-y rounded-lg bg-ink-900 border border-ink-800 px-3 py-2 text-sm text-ink-100 placeholder:text-ink-600 focus:border-red-900/60 transition-colors font-mono"
-              />
-              <div className="flex justify-end gap-2 mt-2">
-                <Button variant="ghost" size="sm" onClick={() => { setShowDeletePanel(false); setDeleteText(""); }}>Закрыть</Button>
-                <Button variant="destructive" size="sm" onClick={bulkDeleteFromText} disabled={!deleteText.trim()}>
-                  <Icon.Trash className="h-3.5 w-3.5" /> Удалить найденные
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {!loaded ? (
-            <p className="text-sm text-ink-500 py-8 text-center">Загрузка…</p>
-          ) : grouped.length === 0 ? (
-            <div className="py-14 text-center">
-              <p className="text-ink-400 text-sm">{dictionary.size === 0 ? "Словарь пока пуст — добавьте первые слова выше." : "По запросу ничего не найдено."}</p>
-            </div>
-          ) : (
-            <div className="space-y-5 max-h-[32rem] overflow-y-auto pr-1">
-              {grouped.map(([letter, words]) => (
-                <div key={letter}>
-                  <div className="flex items-center mb-2 letter-rule">
-                    <span className="font-display text-amber-300 text-sm font-semibold">{letter}</span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-1">
-                    {words.map(w => {
-                      const isSelected = deleteSelected.has(w);
-                      return deleteMode ? (
-                        <button
-                          key={w}
-                          onClick={() => toggleDeleteSelect(w)}
-                          className={`flex items-center gap-1.5 font-mono text-sm rounded px-1.5 py-1 text-left transition-colors ${
-                            isSelected
-                              ? "bg-red-950/60 text-red-300 border border-red-900/60"
-                              : "text-ink-300 hover:bg-ink-800 hover:text-ink-100 border border-transparent"
-                          }`}
-                        >
-                          <span className={`h-3.5 w-3.5 shrink-0 rounded border flex items-center justify-center transition-colors ${isSelected ? "bg-red-500 border-red-500" : "border-ink-600"}`}>
-                            {isSelected && <Icon.Check className="h-2.5 w-2.5 text-white" />}
-                          </span>
-                          <span className="truncate">{w}</span>
-                        </button>
-                      ) : (
-                        <div key={w} className="group flex items-center justify-between font-mono text-sm text-ink-200 hover:text-ink-50 rounded px-1.5 py-0.5 hover:bg-ink-850">
-                          <span className="truncate">{w}</span>
-                          <button onClick={() => removeWord(w)} className="opacity-0 group-hover:opacity-100 text-ink-500 hover:text-red-400 transition-opacity shrink-0 ml-1">
-                            <Icon.Trash className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        <p className="text-center text-xs text-ink-600 pb-4">
-          {ghStatus === "connected"
-            ? `Словарь синхронизирован с ${ghOwner}/${ghRepo} · ${ghPath}. Изменения публикуются автоматически.`
-            : `Откройте настройки (⚙) и подключите репозиторий Эрудита — тогда словарь будет загружаться и сохраняться в GitHub, в том числе с iPad.`}
-        </p>
-      </main>
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-ink-800 border border-ink-700 text-ink-100 text-sm px-4 py-2.5 rounded-xl shadow-xl fade-up z-50">
-          {toast}
-        </div>
-      )}
-
-      {showSettings && ghForm && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowSettings(false)}>
-          <Card className="w-full max-w-md p-6 fade-up" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="font-display text-lg font-medium text-ink-50 flex items-center gap-2">
-                <Icon.Cloud className="h-4 w-4 text-amber-300" /> Публикация в GitHub
-              </h3>
-              <button onClick={() => setShowSettings(false)} className="text-ink-500 hover:text-ink-200">
-                <Icon.X className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="text-xs text-ink-400 mb-4">
-              Каждое добавление или удаление слова будет коммититься прямо в файл словаря репозитория Эрудита. Работает в любом браузере, включая Safari на iPad.
-            </p>
-
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-ink-400 mb-1 block">Владелец / организация</label>
-                  <input value={ghForm.owner} onChange={(e) => setGhForm({ ...ghForm, owner: e.target.value })}
-                    placeholder="MrAndyWillow" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
-                </div>
-                <div>
-                  <label className="text-xs text-ink-400 mb-1 block">Репозиторий</label>
-                  <input value={ghForm.repo} onChange={(e) => setGhForm({ ...ghForm, repo: e.target.value })}
-                    placeholder="erudit" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-ink-400 mb-1 block">Ветка</label>
-                  <input value={ghForm.branch} onChange={(e) => setGhForm({ ...ghForm, branch: e.target.value })}
-                    placeholder="main" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm focus:border-amber-400/60" />
-                </div>
-                <div>
-                  <label className="text-xs text-ink-400 mb-1 block">Путь к файлу</label>
-                  <input value={ghForm.path} onChange={(e) => setGhForm({ ...ghForm, path: e.target.value })}
-                    placeholder="russian_words_nouns.txt" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-ink-400 mb-1 block">Personal Access Token</label>
-                <input value={ghForm.token} onChange={(e) => setGhForm({ ...ghForm, token: e.target.value })}
-                  type="password" placeholder="github_pat_… или ghp_…" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
-                <p className="text-[11px] text-ink-500 mt-1.5 leading-relaxed">
-                  Создайте на github.com/settings/tokens — подойдёт как classic token с правом <code className="text-amber-300">repo</code>, так и fine-grained с <code className="text-amber-300">Contents: Read and write</code> для конкретного репозитория.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mt-5">
-              <Button variant="ghost" size="sm" onClick={disconnectGh} disabled={!ghToken}>Отключить</Button>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setShowSettings(false)}>Отмена</Button>
-                <Button size="sm" onClick={saveGhSettings} disabled={!ghForm || !ghForm.owner || !ghForm.repo || !ghForm.token}>Сохранить и загрузить</Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+  <!-- Навигационная панель -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="bg-gradient-to-br from-amber-500 to-red-600 p-2.5 rounded-xl shadow-lg shadow-amber-500/20">
+        <i data-lucide="brain-circuit" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-300 to-indigo-400">
+          ЭРУДИТ ПОМОЩНИК
+        </h1>
+        <p class="text-xs text-slate-400">Интеллектуальная тактика & анализатор ходов</p>
+      </div>
     </div>
-  );
-}
+    
+    <div class="flex items-center space-x-3">
+      <button onclick="toggleRulesModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition">
+        <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i>
+        <span>Правила игры</span>
+      </button>
+      <button onclick="triggerFileInput()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition">
+        <i data-lucide="upload" class="w-4 h-4 text-indigo-400"></i>
+        <span>Загрузить словарь</span>
+      </button>
+      <input type="file" id="dictFileInput" accept=".txt" class="hidden" onchange="handleDictUpload(event)">
+      <button onclick="openResetModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-red-900/40 hover:bg-red-800/60 border border-red-800 text-red-200 rounded-lg text-xs font-medium transition">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <span>Сброс игры</span>
+      </button>
+    </div>
+  </header>
 
-window.addEventListener("error", function (e) {
-  const root = document.getElementById("root");
-  if (root && !root.dataset.mounted) {
-    root.innerHTML =
-      '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:sans-serif;color:#e8e8ea;text-align:center">' +
-      '<div><p style="font-size:18px;margin-bottom:8px">Ошибка при запуске приложения</p>' +
-      '<p style="font-size:13px;color:#9a9aa1;max-width:480px;font-family:monospace;white-space:pre-wrap">' + (e.message || e) + '</p></div></div>';
-  }
-});
+  <!-- Основной контент -->
+  <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+    
+    <!-- Левая колонка: Виртуальная Доска -->
+    <section class="xl:col-span-7 flex flex-col items-center bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 lg:p-6 shadow-2xl relative">
+      <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h2 class="text-lg font-bold tracking-tight text-slate-200">Виртуальная доска 15х15</h2>
+        </div>
+        
+        <!-- Селектор досок -->
+        <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 space-x-1 self-start sm:self-auto select-none">
+          <button onclick="switchBoardType('classic')" id="boardTypeBtn-classic" class="px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 bg-indigo-600 text-white flex items-center space-x-1">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+            <span>Классическая</span>
+          </button>
+          <button onclick="switchBoardType('alternative')" id="boardTypeBtn-alternative" class="px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+            <i data-lucide="grid-3x3" class="w-3.5 h-3.5"></i>
+            <span>Альтернативная</span>
+          </button>
+        </div>
+      </div>
 
-document.getElementById("root").dataset.mounted = "0";
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-document.getElementById("root").dataset.mounted = "1";
-</script>
+      <div class="w-full flex justify-end text-xs text-slate-400 mb-2 space-x-4">
+        <span class="flex items-center"><span class="w-3 h-3 bg-red-500/30 border border-red-500 rounded mr-1"></span> x3 слово</span>
+        <span class="flex items-center"><span class="w-3 h-3 bg-orange-500/30 border border-orange-500 rounded mr-1"></span> x2 слово</span>
+        <span class="flex items-center"><span class="w-3 h-3 bg-sky-500/30 border border-sky-500 rounded mr-1"></span> x3 буква</span>
+        <span class="flex items-center"><span class="w-3 h-3 bg-emerald-500/30 border border-emerald-500 rounded mr-1"></span> x2 буква</span>
+      </div>
+
+      <!-- Контейнер для доски -->
+      <div class="w-full overflow-auto flex justify-center py-2">
+        <div class="relative select-none bg-slate-950 p-4 rounded-xl border border-slate-800 shadow-inner w-full max-w-[640px] min-w-[320px]">
+          <!-- Буквенные обозначения столбцов (А-П) -->
+          <div class="board-grid-row text-center text-[10px] font-bold text-slate-500 mb-1">
+            <div class="w-6"></div>
+            <div>А</div><div>Б</div><div>В</div><div>Г</div><div>Д</div><div>Е</div><div>Ж</div><div>З</div><div>И</div><div>К</div><div>Л</div><div>М</div><div>Н</div><div>О</div><div>П</div>
+          </div>
+          <!-- Строки доски -->
+          <div id="boardContainer" class="flex flex-col gap-[3px]"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-xs text-slate-400 text-center max-w-lg">
+        <i class="inline-block text-amber-500 font-bold">Подсказка:</i> Кликните на любую клетку на доске, чтобы быстро вписать/изменить букву вручную или пометить её как джокер.
+      </div>
+    </section>
+    
+    <!-- Правая колонка: Панели Управления и Расчетов -->
+    <section class="xl:col-span-5 flex flex-col space-y-6">
+      
+      <!-- Панель статуса и очков игроков -->
+      <div class="grid grid-cols-2 gap-4 bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 p-3.5 rounded-xl border border-indigo-900/40 relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 text-indigo-500/10"><i data-lucide="user" class="w-20 h-20"></i></div>
+          <span class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Игрок (Вы)</span>
+          <div class="text-3xl font-extrabold text-slate-100 mt-1" id="playerScoreDisplay">0</div>
+          <p class="text-[10px] text-slate-400 mt-1">Очков набрано за партию</p>
+        </div>
+        <div class="bg-gradient-to-br from-slate-900 to-rose-950/40 p-3.5 rounded-xl border border-rose-900/40 relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 text-rose-500/10"><i data-lucide="swords" class="w-20 h-20"></i></div>
+          <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Соперник</span>
+          <div class="text-3xl font-extrabold text-slate-100 mt-1" id="opponentScoreDisplay">0</div>
+          <p class="text-[10px] text-slate-400 mt-1">Очков набрано соперником</p>
+        </div>
+      </div>
+
+      <!-- Ввод фишек игрока (Текущая рука) -->
+      <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="hand" class="w-5 h-5 text-amber-400"></i>
+            <h3 class="font-bold text-slate-200">Моя подставка (буквы на руках)</h3>
+          </div>
+          <span class="text-xs text-slate-400" id="rackCount">0 / 7 букв</span>
+        </div>
+        
+        <div class="flex gap-2">
+          <input type="text" id="rackInput" placeholder="Введите до 7 букв, например: СЛОНП**" 
+            class="flex-1 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 uppercase tracking-widest font-mono-custom text-center focus:outline-none transition"
+            maxlength="7" oninput="formatRackInput(this)">
+          <button onclick="clearRack()" class="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition" title="Очистить подставку">
+            <i data-lucide="trash-2" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-2">Используйте символ <span class="text-amber-400 font-bold">*</span> (звёздочка) для обозначения джокеров/звезд на руках.</p>
+
+        <div id="rackTilesDisplay" class="flex flex-wrap gap-2 mt-3 justify-center min-h-[44px]"></div>
+      </div>
+
+      <!-- Переключатель вкладок -->
+      <div class="bg-slate-900/60 p-1.5 rounded-xl border border-slate-800 flex space-x-1 shadow-lg">
+        <button onclick="switchTab('suggestions')" id="tabBtn-suggestions" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-200 bg-indigo-600 text-white">
+          <i class="inline-block w-3.5 h-3.5 mr-1" data-lucide="sparkles"></i> Умный подбор
+        </button>
+        <button onclick="switchTab('manual')" id="tabBtn-manual" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+          <i class="inline-block w-3.5 h-3.5 mr-1" data-lucide="edit"></i> Записать ход
+        </button>
+        <button onclick="switchTab('bag')" id="tabBtn-bag" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+          <i class="inline-block w-3.5 h-3.5 mr-1" data-lucide="package"></i> Оставшийся мешок
+        </button>
+      </div>
+
+      <!-- ВКЛАДКА 1: Умный подбор ходов -->
+      <div id="tabContent-suggestions" class="space-y-4 tab-content">
+        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+          <div>
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Поиск лучших ходов</h4>
+            <p class="text-[10px] text-slate-400" id="dictionaryStatus">Загрузка встроенного словаря...</p>
+          </div>
+          <button id="calcBtn" onclick="startCalculation()" class="bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-950/50">
+            <i data-lucide="zap" class="w-4 h-4 animate-bounce"></i>
+            <span>Рассчитать ходы</span>
+          </button>
+        </div>
+
+        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col min-h-[300px]">
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-3 mb-3 gap-2">
+            <h4 class="font-bold text-slate-200 text-sm">Рекомендации ходов</h4>
+            
+            <div class="flex items-center space-x-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+              <button onclick="setSuggestionsFilter('all')" id="filter-all" class="px-2.5 py-1 text-[9px] font-extrabold rounded-lg transition-all duration-150 bg-indigo-600/30 border border-indigo-500/50 text-indigo-300 flex items-center space-x-1">
+                <i data-lucide="layers" class="w-3 h-3"></i> <span>Все</span>
+              </button>
+              <button onclick="setSuggestionsFilter('rack')" id="filter-rack" class="px-2.5 py-1 text-[9px] font-extrabold rounded-lg transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+                <i data-lucide="hand" class="w-3 h-3"></i> <span>Бесплатные</span>
+              </button>
+              <button onclick="setSuggestionsFilter('joker')" id="filter-joker" class="px-2.5 py-1 text-[9px] font-extrabold rounded-lg transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+                <i data-lucide="gem" class="w-3 h-3"></i> <span>С покупкой</span>
+              </button>
+            </div>
+
+            <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full self-start md:self-auto" id="suggestionsCount">Найдено: 0</span>
+          </div>
+
+          <div id="suggestionsList" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+            <div class="text-center py-12 text-slate-500">
+              <i data-lucide="search-code" class="w-12 h-12 mx-auto text-slate-600 mb-3"></i>
+              <p class="text-xs">Введите буквы на подставку и нажмите «Рассчитать ходы».</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ВКЛАДКА 2: Записать ход вручную -->
+      <div id="tabContent-manual" class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4 tab-content hidden">
+        <h4 class="font-bold text-slate-200 text-sm pb-2 border-b border-slate-800">Зарегистрировать ход вручную</h4>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Кто походил?</label>
+            <select id="manualPlayer" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+              <option value="opponent" selected>Соперник</option>
+              <option value="player">Вы (Игрок)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Слово (только буквы)</label>
+            <div class="relative">
+              <input type="text" id="manualWord" placeholder="Например: СЛОН" class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-3 pr-10 py-2 text-xs text-slate-100 uppercase tracking-widest focus:outline-none focus:border-indigo-500">
+              <button onclick="clearManualWord()" class="absolute right-2.5 top-2 text-slate-500 hover:text-red-400 transition" title="Удалить всё слово">
+                <i data-lucide="x-circle" class="w-4.5 h-4.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Строка (1-15)</label>
+            <input type="number" id="manualRow" min="1" max="15" value="8" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 text-center focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Столбец (А-П)</label>
+            <select id="manualCol" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Направление</label>
+            <select id="manualDir" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="H">Горизонт.</option>
+              <option value="V">Вертикал.</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Отметить какие буквы были джокерами:</span>
+          <div id="manualJokersContainer" class="flex flex-wrap gap-1.5 min-h-[30px] items-center justify-center">
+            <span class="text-xs text-slate-500 italic">Сначала введите слово выше</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button onclick="applyManualWordToBoard()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-indigo-950/50">
+            <i data-lucide="arrow-right-to-line" class="w-4 h-4"></i>
+            <span>на доску</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ВКЛАДКА 3: Содержимое мешка -->
+      <div id="tabContent-bag" class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 shadow-xl tab-content hidden">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+          <div>
+            <h4 class="font-bold text-slate-200 text-sm">Остаток букв в мешке</h4>
+            <p class="text-[10px] text-slate-400">Авторасчет по формуле: Исходный набор - Доска - Рука - Сгоревшие</p>
+          </div>
+          <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-semibold" id="bagTotalDisplay">104 / 104</span>
+        </div>
+        <div id="bagGrid" class="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[300px] overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- История ходов -->
+      <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">История игры</h4>
+          <button onclick="undoLastMove()" class="text-[10px] text-red-400 hover:text-red-300 font-semibold flex items-center space-x-1">
+            <i data-lucide="undo" class="w-3 h-3"></i>
+            <span>Отменить ход</span>
+          </button>
+        </div>
+        <div id="historyList" class="space-y-1.5 max-h-[160px] overflow-y-auto text-xs">
+          <div class="text-center text-slate-500 py-4 italic">Ходов еще не сделано</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Интерактивная модалка редактирования клетки -->
+  <div id="cellEditModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full mx-4 shadow-2xl relative">
+      <button onclick="closeCellModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
+        <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400 mr-2"></i>
+        <span>Редактировать клетку <span id="modalCellCoord" class="text-amber-400">A1</span></span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-4" id="modalCellMultiplierInfo"></p>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1.5">Буква (кириллица, заглавная)</label>
+          <input type="text" id="modalLetterInput" maxlength="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-widest text-slate-100 uppercase focus:outline-none focus:border-indigo-500 transition">
+        </div>
+        <div class="flex items-center space-x-3">
+          <input type="checkbox" id="modalJokerCheckbox" class="w-4 h-4 rounded text-indigo-600 bg-slate-950 border-slate-800 focus:ring-indigo-500">
+          <label for="modalJokerCheckbox" class="text-xs text-slate-300 select-none">Это буква-джокер (дает 0 очков)</label>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button onclick="saveCellFromModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition">Сохранить</button>
+          <button onclick="clearCellFromModal()" class="bg-red-950/50 hover:bg-red-900 border border-red-800 text-red-200 text-xs font-bold py-2.5 rounded-xl transition">Стереть фишку</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО СЖИГАНИЯ/ЖЕРТВОВАНИЯ ФИШЕК ПРИ ПОКУПКЕ ДЖОКЕРОВ -->
+  <div id="sacrificeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl relative">
+      <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
+        <i data-lucide="gem" class="w-5 h-5 text-amber-400 mr-2"></i>
+        <span>Обмен фишек на джокеры</span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">
+        Вы собираетесь сделать ход с покупным джокером. Для этого выберите ровно <span id="sacrificeRequiredCount" class="font-extrabold text-amber-400">0</span> фишек на вашей подставке, которые будут уничтожены (навсегда выйдут из игры):
+      </p>
+      <div id="sacrificeTilesContainer" class="flex flex-wrap gap-2.5 justify-center py-4 px-2 bg-slate-950 rounded-xl border border-slate-800/80 mb-4"></div>
+      <div class="flex items-center justify-between text-xs text-slate-400 mb-5">
+        <span>Выбрано фишек:</span>
+        <span class="text-slate-100 font-bold"><span id="sacrificeSelectedCount" class="text-indigo-400">0</span> из <span id="sacrificeTargetCount" class="text-amber-400">0</span></span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="confirmSacrificeBtn" onclick="executeSacrificeAndPlay()" disabled class="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold py-2.5 rounded-xl transition">
+          Подтвердить ход
+        </button>
+        <button onclick="closeSacrificeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПРЕДУПРЕЖДЕНИЯ О НЕСОВПАДЕНИИ БУКВ ИЛИ ОЧЕРЕДНОСТИ -->
+  <div id="manualTurnWarningModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl relative">
+      <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center text-amber-500">
+        <i data-lucide="alert-triangle" class="w-5 h-5 mr-2 animate-bounce"></i>
+        <span>Конфликт хода / очередности</span>
+      </h3>
+      <p class="text-xs text-slate-300 mb-4 leading-relaxed" id="warningModalMessage">
+        Вы записываете ход за себя, но у вас на руках нет нужных фишек.
+      </p>
+      <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800/80 mb-5 space-y-2">
+        <div class="text-xs text-slate-400">Слово: <strong class="text-amber-400 font-mono-custom" id="warningModalWord">СЛОВО</strong></div>
+        <div class="text-xs text-slate-400">Недостает фишек: <span class="text-red-400 font-bold font-mono-custom" id="warningModalMissing">А, Б</span></div>
+        <div class="text-xs text-red-400 font-semibold hidden" id="warningModalTurnOrder">
+          ⚠️ Обратите внимание: нарушена очередность (вы ходили на предыдущем ходу).
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <button onclick="resolveManualWarning('opponent')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+          <i data-lucide="swords" class="w-4 h-4"></i>
+          <span>Исправить на: Соперник</span>
+        </button>
+        <button onclick="resolveManualWarning('player')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center space-x-2 border border-slate-700">
+          <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
+          <span>Всё равно записать на меня (Игрок)</span>
+        </button>
+        <button onclick="closeManualTurnWarningModal()" class="w-full bg-slate-950/50 hover:bg-slate-900 text-slate-500 text-xs font-semibold py-2 transition rounded-xl">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- КАСТОМНЫЙ ГЕНЕРИК МОДАЛ -->
+  <div id="genericConfirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full mx-4 shadow-2xl relative">
+      <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
+        <i data-lucide="help-circle" class="w-5 h-5 text-indigo-400 mr-2"></i>
+        <span id="genericConfirmTitle">Подтверждение</span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-6" id="genericConfirmMessage">
+        Вы уверены, что хотите выполнить это действие?
+      </p>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="genericConfirmYesBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition">
+          Да, продолжить
+        </button>
+        <button onclick="closeGenericConfirmModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно подтверждения сброса игры -->
+  <div id="resetConfirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full mx-4 shadow-2xl relative">
+      <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
+        <i data-lucide="rotate-ccw" class="w-5 h-5 text-red-500 mr-2 animate-spin"></i>
+        <span>Сброс партии</span>
+      </h3>
+      <p class="text-xs text-slate-400 mb-6">
+        Вы действительно хотите полностью перезапустить текущую партию? Все набранные очки, сгоревшие фишки и история игры будут безвозвратно утеряны.
+      </p>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="executeResetGame()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold py-2.5 rounded-xl transition">
+          Да, сбросить
+        </button>
+        <button onclick="closeResetModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно правил игры -->
+  <div id="rulesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-2xl w-full mx-4 shadow-2xl relative max-h-[85vh] overflow-y-auto">
+      <button onclick="toggleRulesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center border-b border-slate-800 pb-2">
+        <i data-lucide="book-open" class="w-5 h-5 text-amber-400 mr-2"></i>
+        <span>Правила игры Эрудит и Множители</span>
+      </h3>
+      <div class="space-y-4 text-xs leading-relaxed text-slate-300">
+        <p class="font-semibold text-slate-200">Цветные клетки на поле дают дополнительные очки за выкладываемые слова:</p>
+        <ul class="space-y-2 pl-4 list-disc">
+          <li><span class="text-emerald-400 font-bold">x2 буква (зеленый)</span> — количество очков буквы умножается на <span class="underline">два</span>.</li>
+          <li><span class="text-sky-400 font-bold">x3 буква (голубой)</span> — количество очков буквы умножается на <span class="underline text-sky-400">три</span>.</li>
+          <li><span class="text-amber-400 font-bold">x2 слово (оранжевый)</span> — количество очков всего слова умножается на 2.</li>
+          <li><span class="text-red-400 font-bold">x3 слово (красный)</span> — количество очков всего слова умножается на 3.</li>
+        </ul>
+        <p>Если слово пересекает сразу несколько полей "х2/х3 слово", эти множители складываются (например x3 + x3 = x6) к общему счету слова. Очки за образовавшиеся перпендикулярные кросс-слова также рассчитываются и прибавляются к общему счету!</p>
+        <p class="bg-indigo-950/30 border border-indigo-900/50 p-2.5 rounded-lg"><span class="text-indigo-400 font-bold">Бонус за 7 букв:</span> Если за ход игрок использовал все семь букв со своей подставки, ему начисляются дополнительные <span class="text-indigo-300 font-bold">15 очков</span>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Информационные всплывающие подсказки (Toast) -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 space-y-2 z-50 pointer-events-none"></div>
+
+  <!-- Скрипты приложения -->
+  <script>
+    const COL_LABELS = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П'];
+    const LETTER_POINTS = {
+      'А': 1, 'И': 1, 'Н': 1, 'О': 1, 'В': 2, 'Г': 2, 'Е': 2, 'К': 2, 'Л': 2, 'М': 2, 'П': 2, 'Р': 2, 'С': 2, 'Т': 2,
+      'Б': 3, 'Д': 3, 'У': 3, 'Я': 3, 'Ж': 5, 'З': 5, 'Й': 5, 'Х': 5, 'Ч': 5, 'Ы': 5, 'Ь': 5, 'Ф': 8, 'Ц': 8, 'Ш': 8, 'Щ': 8, 'Ю': 8,
+      'Э': 10, 'Ъ': 15, '*': 0
+    };
+    const INITIAL_BAG = {
+      'А': 10, 'Б': 3, 'В': 5, 'Г': 3, 'Д': 5, 'Е': 9, 'Ж': 1, 'З': 2, 'И': 9, 'Й': 2, 'К': 6, 'Л': 5, 'М': 4, 'Н': 8, 'О': 10, 'П': 5, 'Р': 6, 'С': 6, 'Т': 6, 'У': 3,
+      'Ф': 1, 'Х': 1, 'Ц': 1, 'Ч': 2, 'Ш': 1, 'Щ': 1, 'Ъ': 1, 'Ы': 1, 'Ь': 2, 'Э': 1, 'Ю': 1, 'Я': 2, '*': 4
+    };
+
+    let gameState = {
+      board: Array(15).fill(null).map(() => Array(15).fill(null).map(() => ({ letter: '', isJoker: false, isNew: false }))),
+      playerScore: 0, opponentScore: 0, rack: [], destroyed: [], history: [], activeTab: 'suggestions', suggestionsFilter: 'all', lastCalculatedSuggestions: [], boardType: 'classic'
+    };
+
+    let pendingManualMove = null;
+    let genericConfirmAction = null;
+    let pendingCandidate = null;
+    let selectedSacrificeIndices = [];
+    
+    const DICTIONARY = new Set();
+    const BUILTIN_WORDS = ["АРБУЗ", "СЛОН", "ЗАСЛОНКА", "ЗАСЛОН", "СЛОНИК"];
+
+    // --- AUDIO & UI ---
+    let audioCtx = null;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSound(type) {
+      try {
+        initAudio(); if (!audioCtx) return;
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (type === 'success') { osc.frequency.setValueAtTime(523.25, now); osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0, now + 0.25); osc.start(now); osc.stop(now + 0.25); }
+        else if (type === 'coin') { osc.frequency.setValueAtTime(987.77, now); osc.frequency.setValueAtTime(1318.51, now + 0.08); gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0, now + 0.35); osc.start(now); osc.stop(now + 0.35); }
+        else if (type === 'tap') { osc.frequency.setValueAtTime(160, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.04); gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0, now + 0.04); osc.start(now); osc.stop(now + 0.04); }
+        else if (type === 'clear') { osc.frequency.setValueAtTime(320, now); osc.frequency.exponentialRampToValueAtTime(90, now + 0.18); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.18); osc.start(now); osc.stop(now + 0.18); }
+      } catch (e) {}
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer'); if (!container) return;
+      const toast = document.createElement('div');
+      let borderClass = type === 'success' ? 'border-emerald-800 bg-emerald-950/80' : type === 'error' ? 'border-red-800 bg-red-950/40 backdrop-blur' : 'border-slate-800 bg-slate-900';
+      let icon = type === 'success' ? '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>' : type === 'error' ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i>' : '<i data-lucide="info" class="w-4 h-4 text-sky-400"></i>';
+      toast.className = `flex items-center space-x-3 px-4 py-3 rounded-xl border text-xs text-slate-100 shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 ${borderClass}`;
+      toast.innerHTML = `${icon}<span>${message}</span>`;
+      container.appendChild(toast); lucide.createIcons();
+      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
+      setTimeout(() => { toast.classList.add('translate-y-2', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    function updateDictStatusText(text) { const el = document.getElementById('dictionaryStatus'); if (el) el.textContent = text; }
+
+    // --- BOARD MULTIPLIERS ---
+    function getCellMultiplier(r, c) {
+      if (r === 7 && c === 7) return { type: 'center', label: '★', val: 1, textClass: 'text-slate-200' };
+      
+      if (gameState.boardType === 'classic') {
+        if ([[0,0], [0,7], [0,14], [7,0], [7,14], [14,0], [14,7], [14,14]].some(([y, x]) => y === r && x === c)) return { type: 'x3_word', label: 'x3 сло.', val: 3, textClass: 'text-red-400 font-extrabold' };
+        if ([[1,5], [1,9], [5,1], [5,13], [9,1], [9,13], [13,5], [13,9]].some(([y, x]) => y === r && x === c)) return { type: 'x2_word', label: 'x2 сло.', val: 2, textClass: 'text-orange-400 font-extrabold' };
+        if ([[1,1], [2,2], [3,3], [4,4], [10,10], [11,11], [12,12], [13,13], [1,13], [2,12], [3,11], [4,10], [10,4], [11,3], [12,2], [13,1]].some(([y, x]) => y === r && x === c)) return { type: 'x3_letter', label: 'x3 бук.', val: 3, textClass: 'text-sky-400 font-extrabold' };
+        if ([[0,3], [0,11], [2,6], [2,8], [3,0], [3,7], [3,14], [6,2], [6,6], [6,8], [6,12], [7,3], [7,11], [8,2], [8,6], [8,8], [8,12], [11,0], [11,7], [11,14], [12,6], [12,8], [14,3], [14,11]].some(([y, x]) => y === r && x === c)) return { type: 'x2_letter', label: 'x2 бук.', val: 2, textClass: 'text-emerald-400 font-extrabold' };
+      } else {
+        // АЛЬТЕРНАТИВНАЯ ДОСКА
+        if ([[0, 3], [0, 11], [3, 0], [3, 14], [11, 0], [11, 14], [14, 3], [14, 11]].some(([y, x]) => y === r && x === c)) return { type: 'x3_word', label: 'x3 сло.', val: 3, textClass: 'text-red-400 font-extrabold' };
+        if ([[1, 5], [1, 9], [3, 7], [5, 1], [5, 13], [7, 3], [7, 11], [9, 1], [9, 13], [11, 7], [13, 5], [13, 9]].some(([y, x]) => y === r && x === c)) return { type: 'x2_word', label: 'x2 сло.', val: 2, textClass: 'text-orange-400 font-extrabold' };
+        if ([[0, 6], [0, 8], [3, 3], [3, 11], [5, 5], [5, 9], [6, 0], [6, 14], [8, 0], [8, 14], [9, 5], [9, 9], [11, 3], [11, 11], [14, 6], [14, 8]].some(([y, x]) => y === r && x === c)) return { type: 'x3_letter', label: 'x3 бук.', val: 3, textClass: 'text-sky-400 font-extrabold' };
+        if ([[1, 2], [1, 12], [2, 1], [2, 4], [2, 10], [2, 13], [4, 2], [4, 6], [4, 8], [4, 12], [6, 4], [6, 10], [8, 4], [8, 10], [10, 2], [10, 6], [10, 8], [10, 12], [12, 1], [12, 4], [12, 10], [12, 13], [13, 2], [13, 12]].some(([y, x]) => y === r && x === c)) return { type: 'x2_letter', label: 'x2 бук.', val: 2, textClass: 'text-emerald-400 font-extrabold' };
+      }
+      return { type: 'normal', label: '', val: 1, textClass: 'text-slate-500' };
+    }
+
+    // --- BOARD RENDER ---
+    function renderBoard() {
+      const container = document.getElementById('boardContainer'); if (!container) return; container.innerHTML = '';
+      for (let r = 0; r < 15; r++) {
+        const rowDiv = document.createElement('div'); rowDiv.className = 'board-grid-row';
+        const rowLabel = document.createElement('div'); rowLabel.className = 'w-6 text-right pr-2 text-[10px] font-extrabold text-slate-500'; rowLabel.textContent = r + 1; rowDiv.appendChild(rowLabel);
+
+        for (let c = 0; c < 15; c++) {
+          const cellData = gameState.board[r][c]; const mult = getCellMultiplier(r, c);
+          const cellBtn = document.createElement('button'); cellBtn.className = 'board-cell-btn';
+          
+          if (mult.type === 'center') cellBtn.className += ' bg-slate-800 border border-slate-700 hover:bg-slate-700';
+          else if (mult.type === 'x3_word') cellBtn.className += ' bg-red-950/40 border border-red-800 hover:bg-red-900/60';
+          else if (mult.type === 'x2_word') cellBtn.className += ' bg-orange-950/40 border border-orange-800 hover:bg-orange-900/60';
+          else if (mult.type === 'x3_letter') cellBtn.className += ' bg-sky-950/40 border border-sky-800 hover:bg-sky-900/60';
+          else if (mult.type === 'x2_letter') cellBtn.className += ' bg-emerald-950/40 border border-emerald-800 hover:bg-emerald-950/60';
+          else cellBtn.className += ' bg-slate-900/50 border border-slate-800/60 hover:bg-slate-800/40';
+
+          if (cellData.letter) {
+            cellBtn.className += ' z-10';
+            const tileDiv = document.createElement('div'); tileDiv.className = 'absolute inset-[2px] rounded-lg wood-tile flex flex-col items-center justify-center border-2';
+            if (mult.type === 'x3_word') tileDiv.className += ' border-red-500/80 glow-red';
+            else if (mult.type === 'x2_word') tileDiv.className += ' border-orange-500/80 glow-orange';
+            else if (mult.type === 'x3_letter') tileDiv.className += ' border-sky-500/80 glow-blue';
+            else if (mult.type === 'x2_letter') tileDiv.className += ' border-emerald-500/80 glow-green';
+            else tileDiv.className += ' border-amber-600/50';
+
+            const letterSpan = document.createElement('span'); letterSpan.className = `text-lg lg:text-xl font-black ${cellData.isJoker ? 'text-amber-400 font-serif italic' : 'text-slate-100'}`; letterSpan.textContent = cellData.letter;
+            const weightSpan = document.createElement('span'); weightSpan.className = 'absolute bottom-1 right-1 text-[8px] font-bold text-slate-400'; weightSpan.textContent = cellData.isJoker ? '0' : LETTER_POINTS[cellData.letter] || '1';
+
+            if (mult.type !== 'normal') {
+              const indicator = document.createElement('span'); indicator.className = 'absolute top-0.5 left-1 text-[7px] tracking-tighter uppercase font-bold text-slate-400 opacity-85';
+              indicator.textContent = mult.type === 'x3_word' ? 'x3с' : mult.type === 'x2_word' ? 'x2с' : mult.type === 'x3_letter' ? 'x3б' : 'x2б';
+              tileDiv.appendChild(indicator);
+            }
+            tileDiv.appendChild(letterSpan); tileDiv.appendChild(weightSpan); cellBtn.appendChild(tileDiv);
+          } else if (mult.type !== 'normal') {
+            const label = document.createElement('span'); label.className = `text-[8px] font-semibold select-none uppercase tracking-tighter ${mult.textClass}`; label.textContent = mult.label; cellBtn.appendChild(label);
+          }
+          cellBtn.onclick = () => openCellEditModal(r, c); rowDiv.appendChild(cellBtn);
+        }
+        container.appendChild(rowDiv);
+      }
+    }
+
+    // --- MODALS ---
+    function openCellEditModal(r, c) {
+      playSound('tap'); activeEditR = r; activeEditC = c; const cellData = gameState.board[r][c];
+      document.getElementById('modalCellCoord').textContent = `${COL_LABELS[c]}${r + 1}`;
+      document.getElementById('modalLetterInput').value = cellData.letter; document.getElementById('modalJokerCheckbox').checked = cellData.isJoker;
+      document.getElementById('cellEditModal').classList.remove('hidden'); document.getElementById('modalLetterInput').focus();
+    }
+    function closeCellModal() { document.getElementById('cellEditModal').classList.add('hidden'); }
+    function saveCellFromModal() {
+      const rawLetter = document.getElementById('modalLetterInput').value.trim().toUpperCase(); const isJoker = document.getElementById('modalJokerCheckbox').checked;
+      if (!rawLetter) { clearCellFromModal(); return; }
+      if (!/^[А-ЯЁ]$/.test(rawLetter)) return showToast('Введите кириллическую букву', 'error');
+      gameState.board[activeEditR][activeEditC] = { letter: rawLetter, isJoker, isNew: false };
+      playSound('success'); closeCellModal(); renderBoard(); renderBag(); autoCalculateIfPossible();
+    }
+    function clearCellFromModal() { gameState.board[activeEditR][activeEditC] = { letter: '', isJoker: false, isNew: false }; playSound('clear'); closeCellModal(); renderBoard(); renderBag(); autoCalculateIfPossible(); }
+
+    function openResetModal() { playSound('tap'); document.getElementById('resetConfirmModal').classList.remove('hidden'); }
+    function closeResetModal() { document.getElementById('resetConfirmModal').classList.add('hidden'); }
+    function executeResetGame() {
+      gameState.board = Array(15).fill(null).map(() => Array(15).fill(null).map(() => ({ letter: '', isJoker: false, isNew: false })));
+      gameState.playerScore = 0; gameState.opponentScore = 0; gameState.rack = []; gameState.destroyed = []; gameState.history = [];
+      document.getElementById('rackInput').value = ''; document.getElementById('manualWord').value = '';
+      playSound('clear'); closeResetModal(); showToast('Партия сброшена!', 'success');
+      updateScoreboardDisplay(); renderBoard(); renderBag(); updateHistoryDisplay(); renderRackTiles(); updateDefaultManualPlayer();
+      const list = document.getElementById('suggestionsList');
+      if (list) list.innerHTML = `<div class="text-center py-12 text-slate-500"><i data-lucide="search-code" class="w-12 h-12 mx-auto text-slate-600 mb-3"></i><p class="text-xs">Введите буквы на подставку и нажмите «Рассчитать ходы».</p></div>`;
+      const countEl = document.getElementById('suggestionsCount'); if (countEl) countEl.textContent = 'Найдено: 0';
+      lucide.createIcons();
+    }
+
+    function openGenericConfirmModal(title, message, action) {
+      document.getElementById('genericConfirmTitle').textContent = title; document.getElementById('genericConfirmMessage').textContent = message;
+      genericConfirmAction = action; document.getElementById('genericConfirmModal').classList.remove('hidden'); lucide.createIcons();
+    }
+    function closeGenericConfirmModal() { document.getElementById('genericConfirmModal').classList.add('hidden'); genericConfirmAction = null; }
+    document.addEventListener("DOMContentLoaded", function() {
+      const yesBtn = document.getElementById('genericConfirmYesBtn');
+      if (yesBtn) { yesBtn.onclick = function() { if (genericConfirmAction) genericConfirmAction(); closeGenericConfirmModal(); }; }
+    });
+
+    function toggleRulesModal() { playSound('tap'); document.getElementById('rulesModal').classList.toggle('hidden'); }
+
+    // --- RACK & BAG ---
+    function formatRackInput(input) { input.value = input.value.toUpperCase().replace(/[^А-ЯЁ*]/g, ''); gameState.rack = input.value.split(''); document.getElementById('rackCount').textContent = `${gameState.rack.length} / 7 букв`; renderRackTiles(); renderBag(); }
+    function clearRack() { playSound('clear'); document.getElementById('rackInput').value = ''; gameState.rack = []; document.getElementById('rackCount').textContent = `0 / 7 букв`; renderRackTiles(); renderBag(); }
+    function renderRackTiles() {
+      const container = document.getElementById('rackTilesDisplay'); if (!container) return; container.innerHTML = '';
+      if (gameState.rack.length === 0) { container.innerHTML = '<span class="text-xs text-slate-600 italic py-2">Подставка пуста</span>'; return; }
+      gameState.rack.forEach(letter => {
+        const tile = document.createElement('div'); tile.className = 'w-9 h-9 rounded-lg wood-tile border border-amber-600/50 flex flex-col items-center justify-center relative shadow-md';
+        const letterSpan = document.createElement('span'); letterSpan.className = `text-sm font-black ${letter === '*' ? 'text-amber-400 font-serif italic' : 'text-slate-100'}`; letterSpan.textContent = letter === '*' ? '★' : letter;
+        const pointsSpan = document.createElement('span'); pointsSpan.className = 'absolute bottom-0.5 right-1 text-[7px] text-slate-400 font-bold'; pointsSpan.textContent = letter === '*' ? '0' : LETTER_POINTS[letter] || '1';
+        tile.appendChild(letterSpan); tile.appendChild(pointsSpan); container.appendChild(tile);
+      });
+    }
+
+    function calculateRemainingBag() {
+      const currentBag = { ...INITIAL_BAG };
+      for (let r = 0; r < 15; r++) { for (let c = 0; c < 15; c++) { const tile = gameState.board[r][c]; if (tile.letter) { const letterKey = tile.isJoker ? '*' : tile.letter; if (currentBag[letterKey] && currentBag[letterKey] > 0) currentBag[letterKey]--; } } }
+      gameState.rack.forEach(letter => { if (currentBag[letter] && currentBag[letter] > 0) currentBag[letter]--; });
+      if (gameState.destroyed) { gameState.destroyed.forEach(letter => { if (currentBag[letter] && currentBag[letter] > 0) currentBag[letter]--; }); }
+      return currentBag;
+    }
+    function renderBag() {
+      const bag = calculateRemainingBag(); const container = document.getElementById('bagGrid'); if (!container) return; container.innerHTML = ''; let totalLetters = 0;
+      Object.keys(bag).forEach(letter => {
+        const count = bag[letter]; totalLetters += count;
+        const cell = document.createElement('div'); cell.className = `p-2 rounded-xl flex flex-col items-center justify-center border text-center transition ${count === 0 ? 'bg-slate-950/40 border-slate-900 text-slate-600' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`;
+        const letterLabel = document.createElement('span'); letterLabel.className = `text-xs font-black ${letter === '*' ? 'text-amber-400 font-serif' : 'text-slate-200'}`; letterLabel.textContent = letter === '*' ? '★ (Дж)' : letter;
+        const countLabel = document.createElement('span'); countLabel.className = `text-[10px] font-bold ${count === 0 ? 'text-slate-600' : count <= 1 ? 'text-red-400 font-extrabold animate-pulse' : 'text-indigo-400'}`; countLabel.textContent = `${count} шт.`;
+        cell.appendChild(letterLabel); cell.appendChild(countLabel); container.appendChild(cell);
+      });
+      const totalEl = document.getElementById('bagTotalDisplay'); if (totalEl) totalEl.textContent = `${totalLetters} / 104 шт.`;
+    }
+
+    // --- BOARD TOGGLE ---
+    function switchBoardType(newType) {
+      if (gameState.boardType === newType) return;
+      if (gameState.history.length > 0) { openGenericConfirmModal('Переключение доски', 'Смена типа доски приведет к сбросу текущей партии и очистке истории ходов. Желаете продолжить?', function() { executeBoardChange(newType); }); } 
+      else { executeBoardChange(newType); }
+    }
+    function executeBoardChange(newType) {
+      gameState.boardType = newType; executeResetGame(); showToast(`Выбрана ${newType === 'classic' ? 'Классическая доска' : 'Альтернативная доска'}!`, 'success'); updateBoardTypeSelectorUI();
+    }
+    function updateBoardTypeSelectorUI() {
+      const classicBtn = document.getElementById('boardTypeBtn-classic'); const alternativeBtn = document.getElementById('boardTypeBtn-alternative'); if (!classicBtn || !alternativeBtn) return;
+      if (gameState.boardType === 'classic') {
+        classicBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 bg-indigo-600 text-white flex items-center space-x-1';
+        alternativeBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1';
+      } else {
+        classicBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1';
+        alternativeBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-150 bg-indigo-600 text-white flex items-center space-x-1';
+      }
+    }
+
+    // --- SUGGESTIONS & CALCULATION ---
+    function startCalculation() {
+      if (gameState.rack.length === 0) return showToast('Пожалуйста, введите буквы с вашей подставки!', 'error');
+      const btn = document.getElementById('calcBtn');
+      if (btn) { btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-white"></i><span>Идет анализ...</span>'; btn.disabled = true; }
+      const list = document.getElementById('suggestionsList');
+      if (list) list.innerHTML = `<div class="text-center py-12 text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto text-indigo-500 mb-3 animate-spin"></i><p class="text-xs">Глубокий поиск вариантов. Пожалуйста, подождите...</p></div>`;
+      lucide.createIcons();
+      setTimeout(() => {
+        calculateSuggestions();
+        if (btn) { btn.innerHTML = '<i data-lucide="zap" class="w-4 h-4 animate-bounce"></i><span>Рассчитать ходы</span>'; btn.disabled = false; }
+        lucide.createIcons();
+      }, 50);
+    }
+    function autoCalculateIfPossible() { if (gameState.rack.length > 0) startCalculation(); }
+
+    function getVerticalWordAt(r, c, letter) {
+      let word = letter; let currR = r - 1;
+      while (currR >= 0 && gameState.board[currR][c].letter !== '') { word = gameState.board[currR][c].letter + word; currR--; }
+      currR = r + 1;
+      while (currR < 15 && gameState.board[currR][c].letter !== '') { word = word + gameState.board[currR][c].letter; currR++; }
+      return word.length > 1 ? word : "";
+    }
+    function getHorizontalWordAt(r, c, letter) {
+      let word = letter; let currC = c - 1;
+      while (currC >= 0 && gameState.board[r][currC].letter !== '') { word = gameState.board[r][currC].letter + word; currC--; }
+      currC = c + 1;
+      while (currC < 15 && gameState.board[r][currC].letter !== '') { word = word + gameState.board[r][currC].letter; currC++; }
+      return word.length > 1 ? word : "";
+    }
+
+    // ТРЕБОВАНИЕ 3: Проверка реальной возможности собрать слово (учитывая остатки в мешке и лишние фишки для сжигания)
+    function canFormWord(word, boardLettersNeed, availableRack, currentBag) {
+      const result = { possible: true, jokersRequired: [], rackIndicesUsed: [], jokersUsedFromRack: [], lettersUsedFromRack: [] };
+      const rackUsedFlags = new Array(availableRack.length).fill(false);
+      const bag = { ...currentBag }; // Локальная копия для проверки
+
+      for (let i = 0; i < word.length; i++) {
+        const needLetter = word[i];
+        if (boardLettersNeed[i]) {
+          if (boardLettersNeed[i] !== needLetter) return { possible: false };
+          continue;
+        }
+
+        let foundIdx = -1;
+        for (let j = 0; j < availableRack.length; j++) { 
+            if (!rackUsedFlags[j] && availableRack[j] === needLetter) { foundIdx = j; break; } 
+        }
+
+        if (foundIdx !== -1) {
+          rackUsedFlags[foundIdx] = true; 
+          result.rackIndicesUsed.push(foundIdx); 
+          result.lettersUsedFromRack.push({ letter: needLetter, pos: i });
+        } else {
+          let jokerIdx = -1;
+          for (let j = 0; j < availableRack.length; j++) { 
+            if (!rackUsedFlags[j] && availableRack[j] === '*') { jokerIdx = j; break; } 
+          }
+          if (jokerIdx !== -1) {
+            rackUsedFlags[jokerIdx] = true; 
+            result.rackIndicesUsed.push(jokerIdx); 
+            result.jokersUsedFromRack.push({ letter: needLetter, pos: i });
+          } else {
+            // Если буквы нет на руках, пытаемся "купить" её из остатков мешка
+            if (bag[needLetter] > 0) {
+              bag[needLetter]--;
+              result.jokersRequired.push({ letter: needLetter, pos: i });
+            } else if (bag['*'] > 0) {
+              bag['*']--;
+              result.jokersRequired.push({ letter: needLetter, pos: i });
+            } else {
+              // Буква полностью истощена в игре (нет ни самой буквы, ни джокеров)
+              return { possible: false };
+            }
+          }
+        }
+      }
+
+      // Проверка: хватит ли нам свободных фишек на подставке, чтобы сжечь их для покупки?
+      const spareTilesCount = availableRack.length - result.rackIndicesUsed.length;
+      if (result.jokersRequired.length > spareTilesCount) {
+          return { possible: false };
+      }
+
+      return result;
+    }
+
+    function calculateSpecificMoveScore(tilesToPlace, dir) {
+      let mainWordScore = 0; let mainWordMult = 0; let newlyPlacedCount = 0;
+      let crossWordsScore = 0;
+
+      tilesToPlace.forEach(tile => {
+        const boardTile = gameState.board[tile.r][tile.c];
+        const baseVal = tile.isJoker ? 0 : (LETTER_POINTS[tile.letter] || 1);
+        const mult = getCellMultiplier(tile.r, tile.c);
+        
+        if (!boardTile.letter) {
+          newlyPlacedCount++;
+          let letterScore = baseVal;
+          // Умножение очков самой буквы
+          if (mult.type === 'x2_letter') letterScore *= 2;
+          else if (mult.type === 'x3_letter') letterScore *= 3;
+          
+          mainWordScore += letterScore;
+          
+          // ТРЕБОВАНИЕ 1: Сложение множителей слова (x3 + x3 = x6)
+          if (mult.type === 'x2_word') mainWordMult += 2;
+          else if (mult.type === 'x3_word') mainWordMult += 3;
+
+          // РАСЧЕТ ОЧКОВ ЗА ПЕРЕКРЕСТНЫЕ СЛОВА
+          const cw = dir === 'H' ? getVerticalWordAt(tile.r, tile.c, tile.letter) : getHorizontalWordAt(tile.r, tile.c, tile.letter);
+          if (cw.length > 1) {
+            let cwScore = 0;
+            let cwMult = 0;
+            // Множитель нового пересечения также складывается
+            if (mult.type === 'x2_word') cwMult += 2;
+            if (mult.type === 'x3_word') cwMult += 3;
+
+            let stR = tile.r, enR = tile.r, stC = tile.c, enC = tile.c;
+            if (dir === 'H') {
+              while (stR > 0 && gameState.board[stR-1][tile.c].letter) stR--;
+              while (enR < 14 && gameState.board[enR+1][tile.c].letter) enR++;
+              for (let x = stR; x <= enR; x++) {
+                if (x === tile.r) cwScore += letterScore;
+                else cwScore += gameState.board[x][tile.c].isJoker ? 0 : (LETTER_POINTS[gameState.board[x][tile.c].letter] || 1);
+              }
+            } else {
+              while (stC > 0 && gameState.board[tile.r][stC-1].letter) stC--;
+              while (enC < 14 && gameState.board[tile.r][enC+1].letter) enC++;
+              for (let x = stC; x <= enC; x++) {
+                if (x === tile.c) cwScore += letterScore;
+                else cwScore += gameState.board[tile.r][x].isJoker ? 0 : (LETTER_POINTS[gameState.board[tile.r][x].letter] || 1);
+              }
+            }
+            crossWordsScore += cwScore * (cwMult > 0 ? cwMult : 1);
+          }
+        } else {
+          mainWordScore += baseVal;
+        }
+      });
+      
+      const finalWordMult = mainWordMult > 0 ? mainWordMult : 1;
+      let total = mainWordScore * finalWordMult + crossWordsScore;
+      if (newlyPlacedCount === 7) total += 15;
+      
+      return { total, newlyPlacedCount, mainWordMult: finalWordMult }; 
+    }
+
+    function getTacticalPenalty(tilesToPlace, board) {
+        let penalty = 0; let opened = [];
+        const HARD_LETTERS = ['Ь', 'Ъ', 'Ы', 'Й', 'Ц', 'Щ', 'Ф', 'Ч', 'Ю', 'Ж', 'Ш', 'З'];
+
+        tilesToPlace.forEach(tile => {
+            const isCorner = (tile.r === 0 || tile.r === 14) && (tile.c === 0 || tile.c === 14);
+            if (isCorner) {
+                if (HARD_LETTERS.includes(tile.letter)) {
+                    penalty -= 25;
+                    opened.push(`🛡️ Блок угла ('${tile.letter}')`);
+                } else {
+                    penalty += 30;
+                    opened.push(`⚠️ Опасный угол ('${tile.letter}')`);
+                }
+            }
+
+            if (board[tile.r][tile.c].letter !== '') return;
+            const neighbors = [ [tile.r - 1, tile.c], [tile.r + 1, tile.c], [tile.r, tile.c - 1], [tile.r, tile.c + 1] ];
+            neighbors.forEach(([nr, nc]) => {
+                if (nr >= 0 && nr < 15 && nc >= 0 && nc < 15) {
+                    const isPartofNewWord = tilesToPlace.some(t => t.r === nr && t.c === nc);
+                    if (!isPartofNewWord && board[nr][nc].letter === '') {
+                        const mult = getCellMultiplier(nr, nc);
+                        if (mult.type === 'x3_word') { penalty += 15; opened.push('Открыто x3 Слово'); }
+                        else if (mult.type === 'x2_word') { penalty += 8; opened.push('Открыто x2 Слово'); }
+                    }
+                }
+            });
+        });
+        return { penalty, opened: [...new Set(opened)] };
+    }
+
+    function evaluateAndPushCandidate(word, r, c, dir, candidatesArray, isFirstMove, currentBag) {
+      const boardLettersNeed = []; let overlapCount = 0; let conflict = false; let touchingExisting = false; let highValueComboText = "";
+      if (dir === 'H') {
+        if (c - 1 >= 0 && gameState.board[r][c - 1].letter !== '') return;
+        if (c + word.length < 15 && gameState.board[r][c + word.length].letter !== '') return;
+      } else {
+        if (r - 1 >= 0 && gameState.board[r - 1][c].letter !== '') return;
+        if (r + word.length < 15 && gameState.board[r + word.length][c].letter !== '') return;
+      }
+
+      for (let idx = 0; idx < word.length; idx++) {
+        const currR = dir === 'H' ? r : r + idx; const currC = dir === 'H' ? c + idx : c;
+        const boardTile = gameState.board[currR][currC]; const letter = word[idx];
+        if (boardTile.letter !== '') {
+          boardLettersNeed.push(boardTile.letter); overlapCount++; touchingExisting = true;
+          if (boardTile.letter !== letter) conflict = true;
+        } else {
+          boardLettersNeed.push(null);
+          const crossWord = dir === 'H' ? getVerticalWordAt(currR, currC, letter) : getHorizontalWordAt(currR, currC, letter);
+          if (crossWord !== "") { touchingExisting = true; if (!DICTIONARY.has(crossWord)) conflict = true; }
+        }
+      }
+      
+      if (conflict || overlapCount === word.length) return;
+      if (isFirstMove) {
+        let coversCenter = false;
+        for (let idx = 0; idx < word.length; idx++) {
+          const currR = dir === 'H' ? r : r + idx; const currC = dir === 'H' ? c + idx : c;
+          if (currR === 7 && currC === 7) coversCenter = true;
+        }
+        if (!coversCenter) return;
+      } else { if (!touchingExisting) return; }
+      
+      const formResult = canFormWord(word, boardLettersNeed, gameState.rack, currentBag);
+      if (!formResult.possible) return;
+
+      const requireJokers = formResult.jokersRequired.length;
+
+      const tilesToPlace = [];
+      for (let idx = 0; idx < word.length; idx++) {
+        const currR = dir === 'H' ? r : r + idx; const currC = dir === 'H' ? c + idx : c;
+        const boardTile = gameState.board[currR][currC];
+        const isJoker = boardTile.letter ? boardTile.isJoker : (formResult.jokersRequired.some(x => x.pos === idx) || formResult.jokersUsedFromRack.some(x => x.pos === idx)); 
+        const letterVal = LETTER_POINTS[word[idx]] || 0;
+        const mult = getCellMultiplier(currR, currC);
+        if (boardLettersNeed[idx] === null && letterVal >= 5 && (mult.type === 'x3_letter' || mult.type === 'x2_letter')) {
+          highValueComboText = `🔥 Комбо: буква [${word[idx]}] на ${mult.type === 'x3_letter' ? 'x3' : 'x2'} букве!`;
+        }
+        tilesToPlace.push({ r: currR, c: currC, letter: word[idx], isJoker });
+      }
+
+      const scoreObj = calculateSpecificMoveScore(tilesToPlace, dir);
+      const tactical = getTacticalPenalty(tilesToPlace, gameState.board);
+      
+      // ТРЕБОВАНИЕ 4: Легкий тактический штраф для слов с покупкой, чтобы бесплатные варианты поднимались выше
+      const finalSortScore = scoreObj.total - tactical.penalty - (requireJokers * 8);
+
+      candidatesArray.push({
+        word, r, c, dir, score: scoreObj.total, sortScore: finalSortScore, newlyPlacedCount: scoreObj.newlyPlacedCount, mainWordMult: scoreObj.mainWordMult,
+        requireJokers, jokersRequiredList: formResult.jokersRequired, jokersUsedFromRack: formResult.jokersUsedFromRack,
+        rackIndicesUsed: formResult.rackIndicesUsed, combo: highValueComboText, openedPremium: tactical.opened
+      });
+    }
+
+    function calculateSuggestions() {
+      const candidates = [];
+      let isFirstMove = true;
+      for (let r = 0; r < 15; r++) { for (let c = 0; c < 15; c++) { if (gameState.board[r][c].letter) { isFirstMove = false; break; } } }
+      
+      const anchorPoints = [];
+      if (isFirstMove) { 
+        anchorPoints.push({ r: 7, c: 7, isLetter: false }); 
+      } else {
+        for (let r = 0; r < 15; r++) {
+          for (let c = 0; c < 15; c++) {
+            if (gameState.board[r][c].letter) {
+                anchorPoints.push({ r, c, isLetter: true, letter: gameState.board[r][c].letter });
+            } else {
+                const hasNeighbor = (r > 0 && gameState.board[r-1][c].letter !== '') || 
+                                    (r < 14 && gameState.board[r+1][c].letter !== '') || 
+                                    (c > 0 && gameState.board[r][c-1].letter !== '') || 
+                                    (c < 14 && gameState.board[r][c+1].letter !== '');
+                if (hasNeighbor) anchorPoints.push({ r, c, isLetter: false });
+            }
+          }
+        }
+      }
+
+      const currentBag = calculateRemainingBag();
+      const potentialWords = [];
+      
+      DICTIONARY.forEach(word => {
+        if (word.length < 2 || word.length > 15) return;
+        potentialWords.push(word);
+      });
+
+      potentialWords.forEach(word => {
+        anchorPoints.forEach(anchor => {
+          for (let i = 0; i < word.length; i++) {
+            if (anchor.isLetter && word[i] !== anchor.letter) continue;
+
+            const startH_C = anchor.c - i;
+            if (startH_C >= 0 && startH_C + word.length <= 15) evaluateAndPushCandidate(word, anchor.r, startH_C, 'H', candidates, isFirstMove, currentBag);
+            const startV_R = anchor.r - i;
+            if (startV_R >= 0 && startV_R + word.length <= 15) evaluateAndPushCandidate(word, startV_R, anchor.c, 'V', candidates, isFirstMove, currentBag);
+          }
+        });
+      });
+
+      const uniqueCandidates = []; const seen = new Set();
+      candidates.forEach(cand => {
+        const key = `${cand.word}_${cand.r}_${cand.c}_${cand.dir}`;
+        if (!seen.has(key)) { seen.add(key); uniqueCandidates.push(cand); }
+      });
+
+      const freeWords = uniqueCandidates.filter(c => c.requireJokers === 0);
+      const jokerWords = uniqueCandidates.filter(c => c.requireJokers > 0);
+
+      freeWords.sort((a, b) => b.sortScore - a.sortScore);
+      jokerWords.sort((a, b) => b.sortScore - a.sortScore);
+
+      // ТРЕБОВАНИЕ 4: Смещение приоритета в сторону бесплатных слов (в 6 раз больше бесплатных)
+      const topFree = freeWords.slice(0, 300);
+      const topJokers = jokerWords.slice(0, 50);
+      const combinedTop = [...topFree, ...topJokers];
+
+      combinedTop.forEach(cand => { 
+        cand.risks = analyzeExtensionRisks(cand.word, cand.r, cand.c, cand.dir); 
+        if (cand.risks.length > 0) {
+            cand.sortScore -= cand.risks[0].scoreImpact;
+        }
+      });
+      
+      combinedTop.sort((a, b) => b.sortScore - a.sortScore);
+
+      gameState.lastCalculatedSuggestions = combinedTop.slice(0, 200);
+      renderSuggestions();
+      playSound('success');
+    }
+
+    function analyzeExtensionRisks(word, r, c, dir) {
+      const risks = [];
+      DICTIONARY.forEach(dictWord => {
+        if (dictWord === word || dictWord.length <= word.length) return;
+        const idx = dictWord.indexOf(word);
+        if (idx !== -1) {
+          const prefix = dictWord.slice(0, idx); const suffix = dictWord.slice(idx + word.length);
+          if (prefix.length + suffix.length > 7) return;
+
+          let isPhysicallyPossible = true;
+
+          if (prefix.length > 0) {
+            for (let i = 1; i <= prefix.length; i++) {
+              const testR = dir === 'H' ? r : r - i; const testC = dir === 'H' ? c - i : c;
+              if (testR < 0 || testR >= 15 || testC < 0 || testC >= 15) { isPhysicallyPossible = false; break; }
+              if (gameState.board[testR][testC].letter) { isPhysicallyPossible = false; break; }
+            }
+            if (isPhysicallyPossible) {
+              const capR = dir === 'H' ? r : r - prefix.length - 1; const capC = dir === 'H' ? c - prefix.length - 1 : c;
+              if (capR >= 0 && capR < 15 && capC >= 0 && capC < 15 && gameState.board[capR][capC].letter) { isPhysicallyPossible = false; }
+            }
+          }
+
+          if (isPhysicallyPossible && suffix.length > 0) {
+            const wordEndOffset = word.length;
+            for (let i = 0; i < suffix.length; i++) {
+              const testR = dir === 'H' ? r : r + wordEndOffset + i; const testC = dir === 'H' ? c + wordEndOffset + i : c;
+              if (testR < 0 || testR >= 15 || testC < 0 || testC >= 15) { isPhysicallyPossible = false; break; }
+              if (gameState.board[testR][testC].letter) { isPhysicallyPossible = false; break; }
+            }
+            if (isPhysicallyPossible) {
+              const capR = dir === 'H' ? r : r + wordEndOffset + suffix.length; const capC = dir === 'H' ? c + wordEndOffset + suffix.length : c;
+              if (capR >= 0 && capR < 15 && capC >= 0 && capC < 15 && gameState.board[capR][capC].letter) { isPhysicallyPossible = false; }
+            }
+          }
+
+          if (isPhysicallyPossible) {
+            risks.push({ targetWord: dictWord, prefix, suffix, scoreImpact: calculatePotentialOpponentPoints(dictWord, prefix, suffix, r, c, dir, idx) });
+          }
+        }
+      });
+      return risks.sort((a, b) => b.scoreImpact - a.scoreImpact).slice(0, 2);
+    }
+
+    function calculatePotentialOpponentPoints(dictWord, prefix, suffix, r, c, dir, matchIdx) {
+      const startR = dir === 'H' ? r : r - prefix.length; const startC = dir === 'H' ? c - prefix.length : c;
+      let score = 0; let wordMultSum = 0;
+      for (let i = 0; i < dictWord.length; i++) {
+        const currR = dir === 'H' ? startR : startR + i; const currC = dir === 'H' ? startC + i : startC;
+        const wordLength = dictWord.length - prefix.length - suffix.length;
+        const isAlreadyOnBoard = (i >= matchIdx && i < matchIdx + wordLength);
+        const letterVal = LETTER_POINTS[dictWord[i]] || 1;
+        const mult = getCellMultiplier(currR, currC);
+        if (isAlreadyOnBoard) { score += letterVal; } 
+        else {
+          if (mult.type === 'x2_letter') score += letterVal * 2; else if (mult.type === 'x3_letter') score += letterVal * 3; else score += letterVal;
+          if (mult.type === 'x2_word') wordMultSum += 2; else if (mult.type === 'x3_word') wordMultSum += 3;
+        }
+      }
+      return score * (wordMultSum > 0 ? wordMultSum : 1);
+    }
+
+    function setSuggestionsFilter(filterType) {
+      playSound('tap'); gameState.suggestionsFilter = filterType;
+      document.querySelectorAll('[id^="filter-"]').forEach(btn => btn.className = 'px-2.5 py-1 text-[9px] font-extrabold rounded-lg transition-all duration-150 text-slate-400 hover:text-slate-200 flex items-center space-x-1');
+      const activeBtn = document.getElementById(`filter-${filterType}`);
+      if (activeBtn) activeBtn.className = 'px-2.5 py-1 text-[9px] font-extrabold rounded-lg transition-all duration-150 bg-indigo-600/30 border border-indigo-500/50 text-indigo-300 flex items-center space-x-1';
+      renderSuggestions();
+    }
+
+    function renderSuggestions() {
+      const container = document.getElementById('suggestionsList');
+      if (!container) return;
+      container.innerHTML = '';
+      let filteredCandidates = gameState.lastCalculatedSuggestions || [];
+      if (gameState.suggestionsFilter === 'rack') filteredCandidates = filteredCandidates.filter(c => c.requireJokers === 0);
+      else if (gameState.suggestionsFilter === 'joker') filteredCandidates = filteredCandidates.filter(c => c.requireJokers > 0);
+      
+      const sc = document.getElementById('suggestionsCount');
+      if (sc) sc.textContent = `Найдено: ${filteredCandidates.length}`;
+      
+      if (filteredCandidates.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-slate-500"><i data-lucide="info" class="w-10 h-10 mx-auto text-slate-600 mb-2"></i><p class="text-xs">Ничего не найдено по данному фильтру.</p></div>`;
+        lucide.createIcons(); return;
+      }
+
+      filteredCandidates.forEach(cand => {
+        const div = document.createElement('div');
+        const isJokerDeal = cand.requireJokers > 0;
+        div.className = `p-4 rounded-2xl border transition relative overflow-hidden flex flex-col justify-between ${isJokerDeal ? 'bg-slate-900/30 border-amber-900/40 hover:border-amber-700/60' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`;
+        
+        if (isJokerDeal) {
+          const decor = document.createElement('div');
+          decor.className = 'absolute -right-4 -bottom-4 text-amber-500/5 rotate-12 pointer-events-none';
+          decor.innerHTML = '<i data-lucide="gem" class="w-24 h-24"></i>';
+          div.appendChild(decor);
+        }
+
+        const topRow = document.createElement('div'); topRow.className = 'flex items-center justify-between';
+        const leftGroup = document.createElement('div'); leftGroup.className = 'flex items-center space-x-2';
+        
+        const wordSpan = document.createElement('span'); 
+        wordSpan.className = 'font-mono-custom font-extrabold text-lg text-slate-100 tracking-wider flex items-center gap-2'; 
+        // ТРЕБОВАНИЕ 2: Длина слова
+        wordSpan.innerHTML = `${cand.word} <span class="text-[10px] text-slate-400 font-sans tracking-normal bg-slate-800 px-1.5 py-0.5 rounded">${cand.word.length} букв</span>`;
+        
+        const dirBadge = document.createElement('span'); dirBadge.className = 'text-[9px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold mt-1'; dirBadge.textContent = `${COL_LABELS[cand.c]}${cand.r + 1} • ${cand.dir === 'H' ? 'Г' : 'В'}`;
+        
+        const leftCol = document.createElement('div'); leftCol.className = 'flex flex-col items-start';
+        leftCol.appendChild(wordSpan); leftCol.appendChild(dirBadge);
+        leftGroup.appendChild(leftCol);
+        
+        const rightGroup = document.createElement('div'); rightGroup.className = 'text-right flex flex-col items-end';
+        
+        const scoreVal = document.createElement('span'); 
+        scoreVal.className = `text-lg font-black ${isJokerDeal ? 'text-amber-400' : 'text-emerald-400'}`; 
+        
+        // ТРЕБОВАНИЕ 1: Визуальное отображение множителя слова (если он есть)
+        let multText = cand.mainWordMult > 1 ? `<span class="text-[10px] text-red-400 ml-1 font-bold" title="Итоговый сложенный множитель">x${cand.mainWordMult}</span>` : '';
+        scoreVal.innerHTML = `+${cand.score} очк.${multText}`;
+        rightGroup.appendChild(scoreVal);
+        
+        if (cand.newlyPlacedCount === 7) {
+          const bonusSpan = document.createElement('span'); bonusSpan.className = 'text-[9px] text-amber-300 font-bold animate-pulse mt-0.5'; bonusSpan.textContent = '✨ Бонус +15 очков!';
+          rightGroup.appendChild(bonusSpan);
+        }
+        
+        topRow.appendChild(leftGroup); topRow.appendChild(rightGroup); div.appendChild(topRow);
+
+        if (cand.combo) {
+          const comboLine = document.createElement('div'); comboLine.className = 'mt-1 text-[10px] text-emerald-400 font-semibold flex items-center space-x-1';
+          comboLine.innerHTML = `<i data-lucide="flame" class="w-3.5 h-3.5 text-emerald-500"></i> <span>${cand.combo}</span>`; div.appendChild(comboLine);
+        }
+
+        if (cand.openedPremium && cand.openedPremium.length > 0) {
+          const isBonus = cand.openedPremium.some(x => x.includes('🛡️'));
+          const t = document.createElement('div'); 
+          t.className = `mt-1.5 text-[10px] ${isBonus ? 'text-emerald-400 bg-emerald-950/20 border-emerald-900/30' : 'text-rose-400 bg-rose-950/20 border-rose-900/30'} font-semibold flex items-center space-x-1 px-2 py-1 rounded w-max border`;
+          t.innerHTML = `<span>${isBonus ? '' : '⚠️'} Стратегия: ${cand.openedPremium.join(', ')}</span>`; 
+          div.appendChild(t);
+        }
+
+        if (isJokerDeal) {
+          const jokersLine = document.createElement('div'); jokersLine.className = 'mt-2 flex flex-col gap-1 text-[10px] text-amber-400 bg-amber-950/20 border border-amber-900/30 px-2.5 py-2 rounded-lg';
+          const boughtJokersText = cand.jokersRequiredList.map(j => `«${j.letter}»`).join(', ');
+          let innerHTML = `<div class="flex items-center space-x-1.5 font-bold"><i data-lucide="gem" class="w-3.5 h-3.5 text-amber-500"></i><span>[💎 Требуется джокеров: <strong class="font-extrabold text-white">${cand.requireJokers} шт.</strong>]</span></div><div class="text-[9px] text-slate-400 mt-1 pl-5">Будет сыграно как джокер: <span class="text-amber-300 font-bold">${boughtJokersText}</span></div>`;
+          if (cand.jokersUsedFromRack && cand.jokersUsedFromRack.length > 0) {
+            const handJokersText = cand.jokersUsedFromRack.map(j => `«${j.letter}»`).join(', ');
+            innerHTML += `<div class="text-[9px] text-slate-400 pl-5 mt-0.5">Джокер с руки заменит: <span class="text-amber-400 font-bold">${handJokersText}</span></div>`;
+          }
+          jokersLine.innerHTML = innerHTML; div.appendChild(jokersLine);
+        } else if (cand.jokersUsedFromRack && cand.jokersUsedFromRack.length > 0) {
+          const jokersLine = document.createElement('div'); jokersLine.className = 'mt-2 flex items-center space-x-1.5 text-[10px] text-amber-400 bg-slate-900 border border-amber-900/20 px-2.5 py-1.5 rounded-lg w-max';
+          const handJokersText = cand.jokersUsedFromRack.map(j => `«${j.letter}»`).join(', ');
+          jokersLine.innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 animate-pulse"></i><span>Джокер с руки заменит: <strong class="text-white">${handJokersText}</strong></span>`;
+          div.appendChild(jokersLine);
+        }
+
+        if (cand.risks && cand.risks.length > 0) {
+          const riskBlock = document.createElement('div'); riskBlock.className = 'mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5';
+          cand.risks.forEach(risk => {
+            const riskItem = document.createElement('div'); riskItem.className = 'flex items-center justify-between text-[10px] text-slate-400 bg-red-950/10 border border-red-950/30 px-2 py-1.5 rounded-lg';
+            let explanation = '';
+            if (risk.prefix && risk.suffix) explanation = `Допишет «${risk.prefix}...${risk.suffix}» до «${risk.targetWord}»`;
+            else if (risk.prefix) explanation = `Допишет спереди «${risk.prefix}...» до «${risk.targetWord}»`;
+            else explanation = `Допишет сзади «...${risk.suffix}» до «${risk.targetWord}»`;
+            riskItem.innerHTML = `<span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse"></span>⚠️ ${explanation}</span><span class="text-red-400 font-bold">+${risk.scoreImpact} очков сопернику</span>`;
+            riskBlock.appendChild(riskItem);
+          });
+          const penaltyInfo = document.createElement('div'); penaltyInfo.className = 'text-[9px] text-rose-400 font-bold mt-1 text-right w-full';
+          penaltyInfo.textContent = `(Штраф за риск: -${cand.risks[0].scoreImpact} из рейтинга хода)`; riskBlock.appendChild(penaltyInfo);
+          div.appendChild(riskBlock);
+        }
+
+        const botRow = document.createElement('div'); botRow.className = 'mt-3 flex items-center justify-between';
+        const infoSpan = document.createElement('span'); infoSpan.className = 'text-[9px] text-slate-500'; infoSpan.textContent = isJokerDeal ? 'Потребуется выбрать сжигаемые фишки' : 'Доступно из текущих фишек на руках';
+        const applyBtn = document.createElement('button');
+        applyBtn.className = `px-3.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1.5 transition ${isJokerDeal ? 'bg-amber-600 hover:bg-amber-500 text-slate-950 shadow-md shadow-amber-950/30' : 'bg-indigo-600/40 hover:bg-indigo-600 border border-indigo-500 text-slate-200'}`;
+        if (isJokerDeal) { applyBtn.onclick = () => openSacrificeModal(cand); applyBtn.innerHTML = '<i data-lucide="gem" class="w-3.5 h-3.5"></i> <span>Выбрать фишки & Ходить</span>'; } 
+        else { applyBtn.onclick = () => playSuggestedMove(cand, [], []); applyBtn.innerHTML = '<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i> <span>на доску</span>'; }
+        botRow.appendChild(infoSpan); botRow.appendChild(applyBtn); div.appendChild(botRow);
+        container.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function openSacrificeModal(cand) {
+      playSound('tap'); pendingCandidate = cand; selectedSacrificeIndices = [];
+      const sacrificeCandidates = [];
+      gameState.rack.forEach((letter, idx) => { if (!cand.rackIndicesUsed.includes(idx)) sacrificeCandidates.push({ letter, originalIndex: idx }); });
+      
+      document.getElementById('sacrificeRequiredCount').textContent = cand.requireJokers;
+      document.getElementById('sacrificeTargetCount').textContent = cand.requireJokers;
+      document.getElementById('sacrificeSelectedCount').textContent = '0';
+      document.getElementById('confirmSacrificeBtn').disabled = true;
+
+      const container = document.getElementById('sacrificeTilesContainer');
+      container.innerHTML = '';
+      if (sacrificeCandidates.length < cand.requireJokers) {
+        container.innerHTML = `<div class="text-center py-4 px-2 text-red-400 font-semibold text-xs col-span-full"><i data-lucide="alert-triangle" class="w-8 h-8 mx-auto text-red-500 mb-2"></i><span>Недостаточно свободных фишек для сжигания!</span><span class="text-[10px] text-slate-400 mt-1 block leading-relaxed">Все ваши фишки задействованы.<br>Требуется сжечь: <strong class="text-white">${cand.requireJokers}</strong>, свободно: <strong class="text-white">${sacrificeCandidates.length}</strong>.</span></div>`;
+        lucide.createIcons(); document.getElementById('sacrificeModal').classList.remove('hidden'); return;
+      }
+
+      sacrificeCandidates.forEach((candTile) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-11 h-11 rounded-lg wood-tile border border-amber-600/40 hover:border-amber-500 flex flex-col items-center justify-center relative shadow-md transition transform hover:scale-105';
+        const letterSpan = document.createElement('span'); letterSpan.className = `text-sm font-black ${candTile.letter === '*' ? 'text-amber-400 font-serif italic' : 'text-slate-100'}`; letterSpan.textContent = candTile.letter === '*' ? '★' : candTile.letter;
+        const pts = document.createElement('span'); pts.className = 'absolute bottom-1 right-1 text-[8px] text-slate-400 font-bold'; pts.textContent = candTile.letter === '*' ? '0' : LETTER_POINTS[candTile.letter] || '1';
+        btn.appendChild(letterSpan); btn.appendChild(pts);
+        btn.onclick = () => toggleSacrificeTile(candTile.originalIndex, btn); container.appendChild(btn);
+      });
+      document.getElementById('sacrificeModal').classList.remove('hidden');
+    }
+
+    function toggleSacrificeTile(idx, element) {
+      playSound('tap'); const foundIdx = selectedSacrificeIndices.indexOf(idx);
+      if (foundIdx !== -1) {
+        selectedSacrificeIndices.splice(foundIdx, 1);
+        element.classList.remove('border-red-500', 'ring-2', 'ring-red-500/80'); element.classList.add('border-amber-600/40');
+      } else {
+        if (selectedSacrificeIndices.length < pendingCandidate.requireJokers) {
+          selectedSacrificeIndices.push(idx); element.classList.remove('border-amber-600/40'); element.classList.add('border-red-500', 'ring-2', 'ring-red-500/80');
+        } else { showToast(`Выбрано максимальное количество фишек!`, 'info'); }
+      }
+      document.getElementById('sacrificeSelectedCount').textContent = selectedSacrificeIndices.length;
+      document.getElementById('confirmSacrificeBtn').disabled = (selectedSacrificeIndices.length !== pendingCandidate.requireJokers);
+    }
+
+    function closeSacrificeModal() { document.getElementById('sacrificeModal').classList.add('hidden'); pendingCandidate = null; selectedSacrificeIndices = []; }
+    function executeSacrificeAndPlay() {
+      if (!pendingCandidate || selectedSacrificeIndices.length !== pendingCandidate.requireJokers) return;
+      const sacrificedLetters = selectedSacrificeIndices.map(idx => gameState.rack[idx]);
+      playSound('coin'); showToast(`Уничтожено фишек: ${sacrificedLetters.join(', ')}. Они исключены из мешка!`, 'success');
+      playSuggestedMove(pendingCandidate, sacrificedLetters, selectedSacrificeIndices);
+      closeSacrificeModal();
+    }
+
+    function playSuggestedMove(cand, sacrificedLetters = [], sacrificeIndices = []) {
+      const { word, r, c, dir, score, jokersRequiredList, jokersUsedFromRack } = cand;
+      const boughtJokers = jokersRequiredList ? jokersRequiredList.map(j => j.pos) : [];
+      const rackJokers = jokersUsedFromRack ? jokersUsedFromRack.map(j => j.pos) : [];
+      const allJokers = [...boughtJokers, ...rackJokers];
+
+      const originalRack = [...gameState.rack];
+      const wordTilesToPlace = [];
+      for (let i = 0; i < word.length; i++) {
+        const currR = dir === 'H' ? r : r + i; const currC = dir === 'H' ? c + i : c;
+        const letter = word[i];
+        const boardTile = gameState.board[currR][currC];
+        const isJoker = boardTile.letter ? boardTile.isJoker : allJokers.includes(i);
+        wordTilesToPlace.push({ r: currR, c: currC, letter, isJoker });
+      }
+
+      wordTilesToPlace.forEach(tile => { gameState.board[tile.r][tile.c] = { letter: tile.letter, isJoker: tile.isJoker, isNew: false }; });
+
+      const consumedIndices = [...cand.rackIndicesUsed, ...sacrificeIndices];
+      const newRack = originalRack.filter((_, idx) => !consumedIndices.includes(idx));
+      gameState.rack = newRack; document.getElementById('rackInput').value = newRack.join('');
+      document.getElementById('rackCount').textContent = `${newRack.length} / 7 букв`;
+
+      if (sacrificedLetters.length > 0) gameState.destroyed.push(...sacrificedLetters);
+      gameState.playerScore += score; updateScoreboardDisplay();
+
+      gameState.history.push({ player: 'player', word, r, c, dir, score, jokers: allJokers, destroyedTiles: sacrificedLetters, previousRack: originalRack });
+
+      playSound('success');
+      const bonusText = cand.newlyPlacedCount === 7 ? " (+бонус 15 за 7 букв!)" : "";
+      showToast(`Ход совершен! Вы сыграли «${word}» (+${score} очк.)${bonusText}`, 'success');
+
+      renderBoard(); renderBag(); updateHistoryDisplay(); renderRackTiles(); updateDefaultManualPlayer();
+      const list = document.getElementById('suggestionsList');
+      if (list) list.innerHTML = `<div class="text-center py-12 text-slate-500"><i data-lucide="sparkles" class="w-12 h-12 mx-auto text-indigo-500/40 mb-3 animate-pulse"></i><p class="text-xs">Ход выполнен. Пересчитайте варианты на новый ход!</p></div>`;
+      const countEl = document.getElementById('suggestionsCount'); if (countEl) countEl.textContent = 'Найдено: 0';
+    }
+
+    function updateDefaultManualPlayer() {
+      const select = document.getElementById('manualPlayer');
+      if (!select) return;
+      if (gameState.history.length === 0) select.value = 'opponent';
+      else select.value = (gameState.history[gameState.history.length - 1].player === 'player') ? 'opponent' : 'player';
+    }
+
+    function clearManualWord() {
+      playSound('clear'); document.getElementById('manualWord').value = '';
+      document.getElementById('manualJokersContainer').innerHTML = '<span class="text-xs text-slate-500 italic">Сначала введите слово выше</span>';
+    }
+
+    function generateManualJokersCheckboxes(word) {
+      const container = document.getElementById('manualJokersContainer');
+      container.innerHTML = '';
+      if (!word) { container.innerHTML = '<span class="text-xs text-slate-500 italic">Сначала введите слово выше</span>'; return; }
+      word.split('').forEach((letter, idx) => {
+        const wrap = document.createElement('label'); wrap.className = 'flex items-center space-x-1 bg-slate-900 border border-slate-800 px-2 py-1 rounded-md cursor-pointer hover:border-slate-700';
+        const chk = document.createElement('input'); chk.type = 'checkbox'; chk.dataset.index = idx; chk.className = 'w-3 h-3 rounded text-indigo-600 bg-slate-950 border-slate-800 focus:ring-0';
+        const txt = document.createElement('span'); txt.className = 'text-[10px] font-bold text-slate-300'; txt.textContent = `${letter} (№${idx+1})`;
+        wrap.appendChild(chk); wrap.appendChild(txt); container.appendChild(wrap);
+      });
+    }
+
+    function applyManualWordToBoard() {
+      const player = document.getElementById('manualPlayer').value;
+      const word = document.getElementById('manualWord').value.toUpperCase().trim();
+      const r = parseInt(document.getElementById('manualRow').value) - 1;
+      const c = parseInt(document.getElementById('manualCol').value);
+      const dir = document.getElementById('manualDir').value;
+
+      if (!word || word.length < 2) return showToast('Введите слово длиной от 2-х букв', 'error');
+
+      const jokerCheckboxes = document.querySelectorAll('#manualJokersContainer input[type="checkbox"]');
+      const jokers = []; jokerCheckboxes.forEach(chk => { if (chk.checked) jokers.push(parseInt(chk.dataset.index)); });
+
+      if (dir === 'H' && c + word.length > 15) return showToast('Слово выходит за правый край доски!', 'error');
+      if (dir === 'V' && r + word.length > 15) return showToast('Слово выходит за нижний край доски!', 'error');
+
+      const wordTilesToPlace = []; const boardLettersNeed = [];
+      for (let i = 0; i < word.length; i++) {
+        const currR = dir === 'H' ? r : r + i; const currC = dir === 'H' ? c + i : c;
+        const letter = word[i];
+        const boardTile = gameState.board[currR][currC];
+        const isJoker = boardTile.letter ? boardTile.isJoker : jokers.includes(i);
+        if (boardTile.letter && boardTile.letter !== letter) return showToast(`Конфликт букв в клетке ${COL_LABELS[currC]}${currR+1}: на доске '${boardTile.letter}', вы ставите '${letter}'`, 'error');
+        wordTilesToPlace.push({ r: currR, c: currC, letter, isJoker }); boardLettersNeed.push(boardTile.letter || null);
+      }
+
+      const scoreObj = calculateSpecificMoveScore(wordTilesToPlace, dir);
+      const score = scoreObj.total;
+
+      let turnOrderIssue = false;
+      if (gameState.history.length > 0 && gameState.history[gameState.history.length - 1].player === player) turnOrderIssue = true;
+
+      if (player === 'player') {
+        const currentBag = calculateRemainingBag();
+        const testResult = canFormWord(word, boardLettersNeed, gameState.rack, currentBag);
+        
+        if (!testResult.possible || testResult.jokersRequired.length > 0) {
+          const tempRack = [...gameState.rack]; const missing = [];
+          for (let i = 0; i < word.length; i++) {
+            if (!boardLettersNeed[i]) {
+              const letter = word[i]; const rackIdx = tempRack.indexOf(letter);
+              if (rackIdx !== -1) tempRack.splice(rackIdx, 1);
+              else { const starIdx = tempRack.indexOf('*'); if (starIdx !== -1) tempRack.splice(starIdx, 1); else missing.push(letter); }
+            }
+          }
+          openManualTurnWarningModal({ word, r, c, dir, jokers, score, newlyPlacedCount: scoreObj.newlyPlacedCount, missingLetters: missing, turnOrderIssue, wordTilesToPlace, rackIndicesUsed: testResult.rackIndicesUsed });
+          return;
+        } else {
+          executeApplyManualWordWithConsumption(player, word, r, c, dir, jokers, score, scoreObj.newlyPlacedCount, wordTilesToPlace, testResult.rackIndicesUsed); return;
+        }
+      }
+      executeApplyManualWordWithConsumption(player, word, r, c, dir, jokers, score, scoreObj.newlyPlacedCount, wordTilesToPlace, []);
+    }
+
+    function openManualTurnWarningModal(data) {
+      playSound('tap'); pendingManualMove = data;
+      document.getElementById('warningModalWord').textContent = data.word;
+      document.getElementById('warningModalMissing').textContent = data.missingLetters.length > 0 ? data.missingLetters.join(', ') : 'Нет свободных фишек (требуется джокер)';
+      if (data.turnOrderIssue) document.getElementById('warningModalTurnOrder').classList.remove('hidden'); else document.getElementById('warningModalTurnOrder').classList.add('hidden');
+      document.getElementById('manualTurnWarningModal').classList.remove('hidden'); lucide.createIcons();
+    }
+    function closeManualTurnWarningModal() { document.getElementById('manualTurnWarningModal').classList.add('hidden'); pendingManualMove = null; }
+    function resolveManualWarning(selectedPlayer) {
+      if (!pendingManualMove) return;
+      const { word, r, c, dir, jokers, score, newlyPlacedCount, wordTilesToPlace, rackIndicesUsed } = pendingManualMove;
+      if (selectedPlayer === 'player') executeApplyManualWordWithConsumption('player', word, r, c, dir, jokers, score, newlyPlacedCount, wordTilesToPlace, rackIndicesUsed || []);
+      else executeApplyManualWordWithConsumption('opponent', word, r, c, dir, jokers, score, newlyPlacedCount, wordTilesToPlace, []);
+      closeManualTurnWarningModal();
+    }
+
+    function executeApplyManualWordWithConsumption(player, word, r, c, dir, jokers, score, newlyPlacedCount, wordTilesToPlace, rackIndicesUsed) {
+      const previousRack = [...gameState.rack];
+      wordTilesToPlace.forEach(tile => { gameState.board[tile.r][tile.c] = { letter: tile.letter, isJoker: tile.isJoker, isNew: false }; });
+
+      if (player === 'player' && rackIndicesUsed && rackIndicesUsed.length > 0) {
+        const newRack = previousRack.filter((_, idx) => !rackIndicesUsed.includes(idx));
+        gameState.rack = newRack; document.getElementById('rackInput').value = newRack.join('');
+        document.getElementById('rackCount').textContent = `${newRack.length} / 7 букв`; renderRackTiles();
+      }
+
+      if (player === 'player') gameState.playerScore += score; else gameState.opponentScore += score;
+
+      gameState.history.push({ player, word, r, c, dir, score, jokers, destroyedTiles: [], previousRack });
+
+      playSound('success'); 
+      const bonusText = newlyPlacedCount === 7 ? " (+бонус 15 за 7 букв!)" : "";
+      showToast(`Слово «${word}» записано за ${player === 'player' ? 'Игрока' : 'Соперника'}! (+${score} очк.)${bonusText}`, 'success');
+
+      clearManualWord(); updateScoreboardDisplay(); renderBoard(); renderBag(); updateHistoryDisplay(); updateDefaultManualPlayer(); autoCalculateIfPossible();
+    }
+
+    function updateScoreboardDisplay() {
+      const p = document.getElementById('playerScoreDisplay'); if (p) p.textContent = gameState.playerScore;
+      const o = document.getElementById('opponentScoreDisplay'); if (o) o.textContent = gameState.opponentScore;
+    }
+
+    function updateHistoryDisplay() {
+      const container = document.getElementById('historyList'); if (!container) return; container.innerHTML = '';
+      if (gameState.history.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 py-4 italic">Ходов еще не сделано</div>'; return; }
+
+      [...gameState.history].reverse().forEach((item) => {
+        const div = document.createElement('div'); div.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800/80';
+        const left = document.createElement('div'); left.className = 'flex items-center space-x-2';
+        const badge = document.createElement('span'); badge.className = `w-1.5 h-1.5 rounded-full ${item.player === 'player' ? 'bg-indigo-400' : 'bg-rose-400'}`;
+        const whoText = document.createElement('span'); whoText.className = 'font-bold text-slate-300'; whoText.textContent = item.player === 'player' ? 'Вы' : 'Соп.';
+        const wordText = document.createElement('span'); wordText.className = 'font-mono-custom font-extrabold text-amber-400'; wordText.textContent = `«${item.word}»`;
+        const coords = document.createElement('span'); coords.className = 'text-[10px] text-slate-500'; coords.textContent = `${COL_LABELS[item.c]}${item.r + 1}`;
+        left.appendChild(badge); left.appendChild(whoText); left.appendChild(wordText); left.appendChild(coords);
+
+        const rightBlock = document.createElement('div'); rightBlock.className = 'flex items-center space-x-2';
+        if (item.destroyedTiles && item.destroyedTiles.length > 0) {
+          const burnedBadge = document.createElement('span'); burnedBadge.className = 'text-[9px] bg-red-950 text-red-400 px-1.5 py-0.5 rounded font-extrabold flex items-center';
+          burnedBadge.innerHTML = `<i data-lucide="gem" class="w-2.5 h-2.5 mr-0.5 text-red-400"></i> сгорело: ${item.destroyedTiles.join('')}`;
+          rightBlock.appendChild(burnedBadge);
+        }
+        const scoreBadge = document.createElement('span'); scoreBadge.className = 'text-xs font-black bg-slate-950 px-2 py-0.5 rounded-lg text-slate-300'; scoreBadge.textContent = `+${item.score}`;
+        rightBlock.appendChild(scoreBadge); div.appendChild(left); div.appendChild(rightBlock); container.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function undoLastMove() {
+      if (gameState.history.length === 0) return showToast('История ходов пуста!', 'error');
+      const lastMove = gameState.history.pop();
+      
+      for (let r = 0; r < 15; r++) { for (let c = 0; c < 15; c++) { gameState.board[r][c] = { letter: '', isJoker: false, isNew: false }; } }
+      gameState.playerScore = 0; gameState.opponentScore = 0;
+
+      gameState.history.forEach(item => {
+        const wordTilesToPlace = [];
+        for (let i = 0; i < item.word.length; i++) {
+          const currR = item.dir === 'H' ? item.r : item.r + i; const currC = item.dir === 'H' ? item.c + i : item.c;
+          const boardTile = gameState.board[currR][currC];
+          const isJoker = boardTile.letter ? boardTile.isJoker : item.jokers.includes(i);
+          wordTilesToPlace.push({ r: currR, c: currC, letter: item.word[i], isJoker });
+        }
+        const scoreObj = calculateSpecificMoveScore(wordTilesToPlace, item.dir);
+        wordTilesToPlace.forEach(tile => { gameState.board[tile.r][tile.c] = { letter: tile.letter, isJoker: tile.isJoker, isNew: false }; });
+        if (item.player === 'player') gameState.playerScore += scoreObj.total; else gameState.opponentScore += scoreObj.total;
+      });
+
+      gameState.destroyed = [];
+      gameState.history.forEach(item => { if (item.destroyedTiles) gameState.destroyed.push(...item.destroyedTiles); });
+
+      if (lastMove.previousRack) {
+        gameState.rack = [...lastMove.previousRack];
+        document.getElementById('rackInput').value = gameState.rack.join('');
+        document.getElementById('rackCount').textContent = `${gameState.rack.length} / 7 букв`;
+      }
+
+      playSound('clear'); showToast(`Ход «${lastMove.word}» отменен! Восстановлено очков и фишек.`, 'success');
+      updateScoreboardDisplay(); renderBoard(); renderBag(); updateHistoryDisplay(); renderRackTiles(); updateDefaultManualPlayer(); autoCalculateIfPossible();
+    }
+
+    // --- TABS & UPLOAD ---
+    function switchTab(tabId) {
+      playSound('tap');
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('[id^="tabBtn-"]').forEach(btn => btn.className = 'flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200');
+      const content = document.getElementById(`tabContent-${tabId}`); if (content) content.classList.remove('hidden');
+      const btn = document.getElementById(`tabBtn-${tabId}`); if (btn) btn.className = 'flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-200 bg-indigo-600 text-white';
+      gameState.activeTab = tabId;
+    }
+
+    function triggerFileInput() { playSound('tap'); const fileInput = document.getElementById('dictFileInput'); if (fileInput) fileInput.click(); }
+    function handleDictUpload(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const words = e.target.result.split(/[\r\n\s,]+/).map(w => w.trim().toUpperCase().replace('Ё', 'Е')).filter(w => w.length >= 2 && /^[А-Я]+$/.test(w));
+        if (words.length === 0) return showToast('Файл пуст или не содержит русских слов!', 'error');
+        words.forEach(word => DICTIONARY.add(word));
+        playSound('success'); showToast(`Словарь расширен! Добавлено слов: ${words.length}`, 'success');
+        updateDictStatusText(`Словарь: Пользовательский (${DICTIONARY.size} слов)`); autoCalculateIfPossible();
+      };
+      reader.readAsText(file);
+    }
+
+    async function tryFetchExternalDictionaries() {
+      const filesToTry = ['nouns.txt', 'dictionary.txt'];
+      for (const fileName of filesToTry) {
+        try {
+          const response = await fetch(fileName);
+          if (response.ok) {
+            const text = await response.text();
+            const words = text.split(/[\r\n\s,]+/).map(w => w.trim().toUpperCase().replace('Ё', 'Е')).filter(w => w.length >= 2 && /^[А-Я]+$/.test(w));
+            if (words.length > 0) {
+              words.forEach(word => DICTIONARY.add(word));
+              updateDictStatusText(`Загружен словарь: ${fileName} (${DICTIONARY.size} слов)`);
+              showToast(`Успешно подгружено ${words.length} слов из ${fileName}`, 'success');
+              break;
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    // --- INIT ---
+    window.onload = async function() {
+      // --- Инициализация PWA (Web App Manifest) ---
+      const manifest = {
+        name: "Эрудит Помощник Pro",
+        short_name: "Эрудит Pro",
+        display: "standalone",
+        background_color: "#020617",
+        theme_color: "#0f172a",
+        icons: [{
+          src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjU5ZTBiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDVhMyAzIDAgMSAwLTUuOTk3LjEyNSA0IDQgMCAwIDAtNS4yMjQgNS4yMjRBNCA0IDAgMCAwIDQuMyAxOS43YTQgNCAwIDAgMCA1LjIyNC01LjIyNEE0IDQgMCAwIDAgMTQgMTIuMUwyMiA0Ii8+PHBhdGggZD0iTTE5LjIgMTdMMTIgMTJNMTkuMiAxMmwtMy4yLTMuMiIvPjwvc3ZnPg==",
+          sizes: "512x512",
+          type: "image/svg+xml"
+        }]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
+      const manifestURL = URL.createObjectURL(manifestBlob);
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = manifestURL;
+      document.head.appendChild(manifestLink);
+      // -------------------------------------------
+
+      lucide.createIcons();
+      BUILTIN_WORDS.forEach(word => DICTIONARY.add(word));
+      updateDictStatusText(`Встроенный словарь (${DICTIONARY.size} сущ.)`);
+
+      const manualColSelect = document.getElementById('manualCol');
+      if (manualColSelect) {
+        manualColSelect.innerHTML = '';
+        COL_LABELS.forEach((label, idx) => {
+          const opt = document.createElement('option'); opt.value = idx; opt.textContent = label;
+          if (idx === 7) opt.selected = true; manualColSelect.appendChild(opt);
+        });
+      }
+
+      updateDefaultManualPlayer();
+      const manualWordInput = document.getElementById('manualWord');
+      if (manualWordInput) {
+        manualWordInput.addEventListener('input', function() {
+          this.value = this.value.toUpperCase().replace(/[^А-ЯЁ]/g, '');
+          generateManualJokersCheckboxes(this.value);
+        });
+      }
+
+      renderBoard(); renderBag();
+      await tryFetchExternalDictionaries();
+    };
+
+  </script>
 </body>
 </html>
