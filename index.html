@@ -290,9 +290,13 @@ function App() {
   const [dictionary, setDictionary] = useState(new Set());
   const [loaded, setLoaded] = useState(false);
   const [inputText, setInputText] = useState("");
-  const [candidates, setCandidates] = useState([]); // {lemma, source, inDictionary, checked, edited}
+  const [candidates, setCandidates] = useState([]);
   const [filter, setFilter] = useState("");
   const [toast, setToast] = useState(null);
+  const [deleteMode, setDeleteMode] = useState(false);       // режим выделения для удаления в списке
+  const [deleteSelected, setDeleteSelected] = useState(new Set()); // выбранные для удаления
+  const [deleteText, setDeleteText] = useState("");           // текст для массового удаления
+  const [showDeletePanel, setShowDeletePanel] = useState(false); // панель массового удаления
   const [fileHandle, setFileHandle] = useState(null);
   const [fileStatus, setFileStatus] = useState("none"); // none | reconnect | connected | saving | error
   const [exportName, setExportName] = useState(FILE_NAME);
@@ -376,44 +380,87 @@ function App() {
     }
   }, []);
 
-  const utf8ToBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+  const utf8ToBase64 = (str) => {
+    // btoa не понимает кириллицу напрямую — кодируем через UTF-8
+    const bytes = new TextEncoder().encode(str);
+    let bin = "";
+    bytes.forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin);
+  };
 
-  const pushToGitHub = useCallback(async (set) => {
-    if (!ghToken || !ghConfig.owner || !ghConfig.repo) return;
-    setGhStatus("saving");
-    const apiUrl = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/${encodeURIComponent(ghConfig.path)}`;
-    const headers = { Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json" };
+  // путь к файлу в API — каждый сегмент кодируем отдельно
+  const ghApiUrl = useCallback((cfg) => {
+    const segments = (cfg.path || FILE_NAME).split("/").map(encodeURIComponent).join("/");
+    return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${segments}`;
+  }, []);
+
+  const ghHeaders = useCallback((token) => ({
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  }), []);
+
+  // Проверяет доступность репозитория и права токена, возвращает {ok, message}
+  const testGhConnection = useCallback(async (cfg, token) => {
+    if (!token || !cfg.owner || !cfg.repo) return { ok: false, message: "Заполните владельца, репозиторий и токен" };
     try {
+      const url = ghApiUrl(cfg);
+      const res = await fetch(`${url}?ref=${encodeURIComponent(cfg.branch || "main")}`, {
+        headers: ghHeaders(token),
+      });
+      if (res.ok || res.status === 404) return { ok: true, message: null }; // 404 = файла ещё нет, но доступ есть
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 401) return { ok: false, message: "Токен недействителен или истёк (401)" };
+      if (res.status === 403) return { ok: false, message: "Токен не имеет доступа к этому репозиторию (403)" };
+      if (res.status === 422) return { ok: false, message: "Неверная ветка или путь (422)" };
+      return { ok: false, message: body.message || `Ошибка ${res.status}` };
+    } catch (e) {
+      if (e.name === "TypeError" && e.message.includes("fetch")) {
+        return { ok: false, message: "Нет доступа к api.github.com — проверьте сеть / DNS" };
+      }
+      return { ok: false, message: e.message };
+    }
+  }, [ghApiUrl, ghHeaders]);
+
+  const pushToGitHub = useCallback(async (set, cfgOverride, tokenOverride) => {
+    const cfg = cfgOverride || ghConfig;
+    const token = tokenOverride || ghToken;
+    if (!token || !cfg.owner || !cfg.repo) return;
+    setGhStatus("saving");
+    const url = ghApiUrl(cfg);
+    const hdrs = ghHeaders(token);
+    try {
+      // читаем sha существующего файла (нужен для обновления)
       let sha = null;
-      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(ghConfig.branch)}`, { headers });
+      const getRes = await fetch(`${url}?ref=${encodeURIComponent(cfg.branch || "main")}`, { headers: hdrs });
       if (getRes.ok) {
         sha = (await getRes.json()).sha;
       } else if (getRes.status !== 404) {
-        const err = await getRes.json().catch(() => ({}));
-        throw new Error(err.message || `Не удалось прочитать файл (${getRes.status})`);
+        const body = await getRes.json().catch(() => ({}));
+        throw new Error(body.message || `Не удалось прочитать файл (${getRes.status})`);
       }
       const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-      const putRes = await fetch(apiUrl, {
+      const putRes = await fetch(url, {
         method: "PUT",
-        headers: { ...headers, "Content-Type": "application/json" },
+        headers: { ...hdrs, "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: `Словарь: ${set.size} слов`,
+          message: `dict: ${set.size} words`,
           content: utf8ToBase64(text),
-          branch: ghConfig.branch,
+          branch: cfg.branch || "main",
           ...(sha ? { sha } : {}),
         }),
       });
       if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(err.message || `Ошибка записи (${putRes.status})`);
+        const body = await putRes.json().catch(() => ({}));
+        throw new Error(body.message || `Ошибка записи (${putRes.status})`);
       }
       setGhStatus("connected");
     } catch (e) {
-      console.error("GitHub sync:", e);
+      console.error("GitHub:", e);
       setGhStatus("error");
       showToast(`GitHub: ${e.message}`);
     }
-  }, [ghToken, ghConfig]);
+  }, [ghToken, ghConfig, ghApiUrl, ghHeaders]);
 
   // единая точка изменения словаря: обновляет state, кэш в браузере и,
   // если подключён локальный файл и/или репозиторий GitHub — пишет туда же
@@ -490,17 +537,28 @@ function App() {
     const repo = ghForm.repo.trim();
     const branch = (ghForm.branch || "main").trim();
     const path = (ghForm.path || FILE_NAME).trim();
-    const token = (ghForm.token || "").trim();
-    const cfg = { owner, repo, branch, path };
-    setGhConfig(cfg);
-    await window.storage.set("gh-config", JSON.stringify(cfg), false);
-    if (token) {
-      setGhToken(token);
-      await idbSet("ghToken", token);
+    const token = (ghForm.token || "").trim() || ghToken;
+    if (!owner || !repo || !token) {
+      showToast("Заполните владельца, репозиторий и токен");
+      return;
     }
-    setGhStatus(owner && repo && (token || ghToken) ? "connected" : "none");
+    const cfg = { owner, repo, branch, path };
+    setGhStatus("saving");
     setShowSettings(false);
-    showToast("Настройки публикации сохранены");
+    const { ok, message } = await testGhConnection(cfg, token);
+    if (!ok) {
+      setGhStatus("error");
+      showToast(`GitHub: ${message}`);
+      setGhForm({ ...cfg, token });
+      setShowSettings(true);
+      return;
+    }
+    setGhConfig(cfg);
+    setGhToken(token);
+    setGhStatus("connected");
+    await window.storage.set("gh-config", JSON.stringify(cfg), false);
+    await idbSet("ghToken", token);
+    showToast(`GitHub подключён: ${owner}/${repo}`);
   };
 
   const disconnectGh = async () => {
@@ -550,6 +608,39 @@ function App() {
     const next = new Set(dictionary);
     next.delete(word);
     await saveDictionary(next);
+  };
+
+  const toggleDeleteSelect = (word) => {
+    setDeleteSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(word)) next.delete(word); else next.add(word);
+      return next;
+    });
+  };
+
+  const commitDelete = async () => {
+    if (!deleteSelected.size) return;
+    const next = new Set(dictionary);
+    deleteSelected.forEach(w => next.delete(w));
+    await saveDictionary(next);
+    showToast(`Удалено слов: ${deleteSelected.size}`);
+    setDeleteSelected(new Set());
+    setDeleteMode(false);
+  };
+
+  const bulkDeleteFromText = async () => {
+    if (!deleteText.trim()) return;
+    const words = deleteText
+      .split(/[\s,;|]+/)
+      .map(w => w.trim().toLowerCase().replace(/[^а-яёa-z0-9-]/gi, ""))
+      .filter(Boolean);
+    const next = new Set(dictionary);
+    let removed = 0;
+    words.forEach(w => { if (next.has(w)) { next.delete(w); removed++; } });
+    await saveDictionary(next);
+    setDeleteText("");
+    setShowDeletePanel(false);
+    showToast(removed ? `Удалено слов: ${removed}` : "Ни одно из слов не найдено в словаре");
   };
 
   const updateExportName = useCallback(async (name) => {
@@ -758,18 +849,65 @@ function App() {
 
         {/* DICTIONARY */}
         <Card className="p-6">
+          {/* Заголовок и панель управления */}
           <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-            <h2 className="font-display text-lg font-medium text-ink-50">Словарь</h2>
-            <div className="relative w-full sm:w-64">
-              <Icon.Search className="h-4 w-4 text-ink-500 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="Поиск по словарю…"
-                className="w-full bg-ink-950 border border-ink-700 rounded-lg pl-9 pr-3 h-9 text-sm focus:border-amber-400/60 transition-colors"
-              />
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="font-display text-lg font-medium text-ink-50">Словарь</h2>
+              {deleteMode && deleteSelected.size > 0 && (
+                <Badge tone="amber">{deleteSelected.size} выбрано</Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Режим выделения */}
+              {!deleteMode ? (
+                <>
+                  <Button variant="ghost" size="sm" onClick={() => { setShowDeletePanel(p => !p); setDeleteMode(false); }}
+                    title="Массовое удаление по списку">
+                    <Icon.Trash className="h-3.5 w-3.5" /> По списку
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setDeleteMode(true); setDeleteSelected(new Set()); setShowDeletePanel(false); }}>
+                    <Icon.Trash className="h-3.5 w-3.5" /> Выбрать
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" onClick={() => { setDeleteSelected(new Set()); setDeleteMode(false); }}>Отменить</Button>
+                  <Button variant="destructive" size="sm" onClick={commitDelete} disabled={!deleteSelected.size}>
+                    <Icon.Trash className="h-3.5 w-3.5" /> Удалить ({deleteSelected.size})
+                  </Button>
+                </>
+              )}
+              <div className="relative w-48">
+                <Icon.Search className="h-4 w-4 text-ink-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  placeholder="Поиск…"
+                  className="w-full bg-ink-950 border border-ink-700 rounded-lg pl-9 pr-3 h-9 text-sm focus:border-amber-400/60 transition-colors"
+                />
+              </div>
             </div>
           </div>
+
+          {/* Панель массового удаления по списку */}
+          {showDeletePanel && (
+            <div className="mb-4 p-4 rounded-xl bg-ink-950 border border-red-900/40 fade-up">
+              <p className="text-xs text-ink-400 mb-2">Вставьте слова для удаления — через пробел, запятую или с новой строки. Также можно вставить текст целиком: из него будут извлечены слова, совпадающие со словарём.</p>
+              <textarea
+                value={deleteText}
+                onChange={(e) => setDeleteText(e.target.value)}
+                placeholder="дерево, лес, вода…"
+                rows={3}
+                className="w-full resize-y rounded-lg bg-ink-900 border border-ink-800 px-3 py-2 text-sm text-ink-100 placeholder:text-ink-600 focus:border-red-900/60 transition-colors font-mono"
+              />
+              <div className="flex justify-end gap-2 mt-2">
+                <Button variant="ghost" size="sm" onClick={() => { setShowDeletePanel(false); setDeleteText(""); }}>Закрыть</Button>
+                <Button variant="destructive" size="sm" onClick={bulkDeleteFromText} disabled={!deleteText.trim()}>
+                  <Icon.Trash className="h-3.5 w-3.5" /> Удалить найденные
+                </Button>
+              </div>
+            </div>
+          )}
 
           {!loaded ? (
             <p className="text-sm text-ink-500 py-8 text-center">Загрузка…</p>
@@ -784,15 +922,33 @@ function App() {
                   <div className="flex items-center mb-2 letter-rule">
                     <span className="font-display text-amber-300 text-sm font-semibold">{letter}</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-1.5">
-                    {words.map(w => (
-                      <div key={w} className="group flex items-center justify-between font-mono text-sm text-ink-200 hover:text-ink-50 rounded px-1.5 py-0.5 hover:bg-ink-850">
-                        <span className="truncate">{w}</span>
-                        <button onClick={() => removeWord(w)} className="opacity-0 group-hover:opacity-100 text-ink-500 hover:text-red-400 transition-opacity shrink-0 ml-1">
-                          <Icon.Trash className="h-3.5 w-3.5" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-1">
+                    {words.map(w => {
+                      const isSelected = deleteSelected.has(w);
+                      return deleteMode ? (
+                        <button
+                          key={w}
+                          onClick={() => toggleDeleteSelect(w)}
+                          className={`flex items-center gap-1.5 font-mono text-sm rounded px-1.5 py-1 text-left transition-colors ${
+                            isSelected
+                              ? "bg-red-950/60 text-red-300 border border-red-900/60"
+                              : "text-ink-300 hover:bg-ink-800 hover:text-ink-100 border border-transparent"
+                          }`}
+                        >
+                          <span className={`h-3.5 w-3.5 shrink-0 rounded border flex items-center justify-center transition-colors ${isSelected ? "bg-red-500 border-red-500" : "border-ink-600"}`}>
+                            {isSelected && <Icon.Check className="h-2.5 w-2.5 text-white" />}
+                          </span>
+                          <span className="truncate">{w}</span>
                         </button>
-                      </div>
-                    ))}
+                      ) : (
+                        <div key={w} className="group flex items-center justify-between font-mono text-sm text-ink-200 hover:text-ink-50 rounded px-1.5 py-0.5 hover:bg-ink-850">
+                          <span className="truncate">{w}</span>
+                          <button onClick={() => removeWord(w)} className="opacity-0 group-hover:opacity-100 text-ink-500 hover:text-red-400 transition-opacity shrink-0 ml-1">
+                            <Icon.Trash className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
