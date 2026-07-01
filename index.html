@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#020617">
   
-  <!-- Иконка приложения (Base64) -->
+  <!-- Иконка приложения -->
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjU5ZTBiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDVhMyAzIDAgMSAwLTUuOTk3LjEyNSA0IDQgMCAwIDAtNS4yMjQgNS4yMjRBNCA0IDAgMCAwIDQuMyAxOS43YTQgNCAwIDAgMCA1LjIyNC01LjIyNEE0IDQgMCAwIDAgMTQgMTIuMUwyMiA0Ii8+PHBhdGggZD0iTTE5LjIgMTdMMTIgMTJNMTkuMiAxMmwtMy4yLTMuMiIvPjwvc3ZnPg==">
 
   <!-- Tailwind CSS -->
@@ -21,26 +21,12 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .font-mono-custom {
-      font-family: 'Fira Code', monospace;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono-custom { font-family: 'Fira Code', monospace; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
     .wood-tile {
       background: radial-gradient(circle, rgba(63,43,21,1) 0%, rgba(41,27,12,1) 100%);
       box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 4px 6px -1px rgba(0,0,0,0.5);
@@ -57,20 +43,14 @@
       align-items: center;
     }
     .board-cell-btn {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      border-radius: 0.25rem;
-      transition: all 150ms ease;
-      outline: none;
+      width: 100%; aspect-ratio: 1 / 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; border-radius: 0.25rem; transition: all 150ms ease; outline: none;
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+  
   <!-- Навигационная панель -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-3">
@@ -136,12 +116,10 @@
       <!-- Контейнер для доски -->
       <div class="w-full overflow-auto flex justify-center py-2">
         <div class="relative select-none bg-slate-950 p-4 rounded-xl border border-slate-800 shadow-inner w-full max-w-[640px] min-w-[320px]">
-          <!-- Буквенные обозначения столбцов (А-П) -->
           <div class="board-grid-row text-center text-[10px] font-bold text-slate-500 mb-1">
             <div class="w-6"></div>
             <div>А</div><div>Б</div><div>В</div><div>Г</div><div>Д</div><div>Е</div><div>Ж</div><div>З</div><div>И</div><div>К</div><div>Л</div><div>М</div><div>Н</div><div>О</div><div>П</div>
           </div>
-          <!-- Строки доски -->
           <div id="boardContainer" class="flex flex-col gap-[3px]"></div>
         </div>
       </div>
@@ -151,10 +129,10 @@
       </div>
     </section>
     
-    <!-- Правая колонка: Панели Управления и Расчетов -->
+    <!-- Правая колонка: Панели Управления -->
     <section class="xl:col-span-5 flex flex-col space-y-6">
       
-      <!-- Панель статуса и очков игроков -->
+      <!-- Панель статуса -->
       <div class="grid grid-cols-2 gap-4 bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-xl">
         <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 p-3.5 rounded-xl border border-indigo-900/40 relative overflow-hidden">
           <div class="absolute -right-6 -bottom-6 text-indigo-500/10"><i data-lucide="user" class="w-20 h-20"></i></div>
@@ -170,7 +148,7 @@
         </div>
       </div>
 
-      <!-- Ввод фишек игрока (Текущая рука) -->
+      <!-- Ввод фишек игрока -->
       <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 shadow-xl">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
@@ -358,7 +336,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО СЖИГАНИЯ/ЖЕРТВОВАНИЯ ФИШЕК ПРИ ПОКУПКЕ ДЖОКЕРОВ -->
+  <!-- МОДАЛЬНОЕ ОКНО СЖИГАНИЯ ФИШЕК ПРИ ПОКУПКЕ ДЖОКЕРОВ -->
   <div id="sacrificeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl relative">
       <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
@@ -384,7 +362,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРЕДУПРЕЖДЕНИЯ О НЕСОВПАДЕНИИ БУКВ ИЛИ ОЧЕРЕДНОСТИ -->
+  <!-- МОДАЛЬНОЕ ОКНО ПРЕДУПРЕЖДЕНИЯ -->
   <div id="manualTurnWarningModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl relative">
       <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center text-amber-500">
@@ -417,7 +395,7 @@
     </div>
   </div>
 
-  <!-- КАСТОМНЫЙ ГЕНЕРИК МОДАЛ -->
+  <!-- КАСТОМНЫЙ ГЕНЕРИК МОДАЛ (Для защиты смены доски) -->
   <div id="genericConfirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full mx-4 shadow-2xl relative">
       <h3 class="text-lg font-bold text-slate-200 mb-2 flex items-center">
@@ -484,7 +462,6 @@
   <!-- Информационные всплывающие подсказки (Toast) -->
   <div id="toastContainer" class="fixed bottom-6 right-6 space-y-2 z-50 pointer-events-none"></div>
 
-  <!-- Скрипты приложения -->
   <script>
     const COL_LABELS = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П'];
     const LETTER_POINTS = {
@@ -540,7 +517,6 @@
 
     function updateDictStatusText(text) { const el = document.getElementById('dictionaryStatus'); if (el) el.textContent = text; }
 
-    // --- BOARD MULTIPLIERS ---
     function getCellMultiplier(r, c) {
       if (r === 7 && c === 7) return { type: 'center', label: '★', val: 1, textClass: 'text-slate-200' };
       
@@ -550,7 +526,6 @@
         if ([[1,1], [2,2], [3,3], [4,4], [10,10], [11,11], [12,12], [13,13], [1,13], [2,12], [3,11], [4,10], [10,4], [11,3], [12,2], [13,1]].some(([y, x]) => y === r && x === c)) return { type: 'x3_letter', label: 'x3 бук.', val: 3, textClass: 'text-sky-400 font-extrabold' };
         if ([[0,3], [0,11], [2,6], [2,8], [3,0], [3,7], [3,14], [6,2], [6,6], [6,8], [6,12], [7,3], [7,11], [8,2], [8,6], [8,8], [8,12], [11,0], [11,7], [11,14], [12,6], [12,8], [14,3], [14,11]].some(([y, x]) => y === r && x === c)) return { type: 'x2_letter', label: 'x2 бук.', val: 2, textClass: 'text-emerald-400 font-extrabold' };
       } else {
-        // АЛЬТЕРНАТИВНАЯ ДОСКА
         if ([[0, 3], [0, 11], [3, 0], [3, 14], [11, 0], [11, 14], [14, 3], [14, 11]].some(([y, x]) => y === r && x === c)) return { type: 'x3_word', label: 'x3 сло.', val: 3, textClass: 'text-red-400 font-extrabold' };
         if ([[1, 5], [1, 9], [3, 7], [5, 1], [5, 13], [7, 3], [7, 11], [9, 1], [9, 13], [11, 7], [13, 5], [13, 9]].some(([y, x]) => y === r && x === c)) return { type: 'x2_word', label: 'x2 сло.', val: 2, textClass: 'text-orange-400 font-extrabold' };
         if ([[0, 6], [0, 8], [3, 3], [3, 11], [5, 5], [5, 9], [6, 0], [6, 14], [8, 0], [8, 14], [9, 5], [9, 9], [11, 3], [11, 11], [14, 6], [14, 8]].some(([y, x]) => y === r && x === c)) return { type: 'x3_letter', label: 'x3 бук.', val: 3, textClass: 'text-sky-400 font-extrabold' };
@@ -559,7 +534,6 @@
       return { type: 'normal', label: '', val: 1, textClass: 'text-slate-500' };
     }
 
-    // --- BOARD RENDER ---
     function renderBoard() {
       const container = document.getElementById('boardContainer'); if (!container) return; container.innerHTML = '';
       for (let r = 0; r < 15; r++) {
@@ -604,7 +578,6 @@
       }
     }
 
-    // --- MODALS ---
     function openCellEditModal(r, c) {
       playSound('tap'); activeEditR = r; activeEditC = c; const cellData = gameState.board[r][c];
       document.getElementById('modalCellCoord').textContent = `${COL_LABELS[c]}${r + 1}`;
@@ -668,6 +641,7 @@
       if (gameState.destroyed) { gameState.destroyed.forEach(letter => { if (currentBag[letter] && currentBag[letter] > 0) currentBag[letter]--; }); }
       return currentBag;
     }
+    
     function renderBag() {
       const bag = calculateRemainingBag(); const container = document.getElementById('bagGrid'); if (!container) return; container.innerHTML = ''; let totalLetters = 0;
       Object.keys(bag).forEach(letter => {
@@ -680,11 +654,10 @@
       const totalEl = document.getElementById('bagTotalDisplay'); if (totalEl) totalEl.textContent = `${totalLetters} / 104 шт.`;
     }
 
-    // --- BOARD TOGGLE ---
     function switchBoardType(newType) {
       if (gameState.boardType === newType) return;
-      if (gameState.history.length > 0) { openGenericConfirmModal('Переключение доски', 'Смена типа доски приведет к сбросу текущей партии и очистке истории ходов. Желаете продолжить?', function() { executeBoardChange(newType); }); } 
-      else { executeBoardChange(newType); }
+      // Жесткая блокировка смены доски от случайного нажатия ВСЕГДА
+      openGenericConfirmModal('Смена типа доски', 'Внимание! Смена доски приведет к полному сбросу текущей партии и очистке всей истории ходов. Вы уверены, что хотите продолжить?', function() { executeBoardChange(newType); });
     }
     function executeBoardChange(newType) {
       gameState.boardType = newType; executeResetGame(); showToast(`Выбрана ${newType === 'classic' ? 'Классическая доска' : 'Альтернативная доска'}!`, 'success'); updateBoardTypeSelectorUI();
@@ -700,7 +673,6 @@
       }
     }
 
-    // --- SUGGESTIONS & CALCULATION ---
     function startCalculation() {
       if (gameState.rack.length === 0) return showToast('Пожалуйста, введите буквы с вашей подставки!', 'error');
       const btn = document.getElementById('calcBtn');
@@ -731,11 +703,13 @@
       return word.length > 1 ? word : "";
     }
 
-    // ТРЕБОВАНИЕ 3: Проверка реальной возможности собрать слово (учитывая остатки в мешке и лишние фишки для сжигания)
     function canFormWord(word, boardLettersNeed, availableRack, currentBag) {
       const result = { possible: true, jokersRequired: [], rackIndicesUsed: [], jokersUsedFromRack: [], lettersUsedFromRack: [] };
       const rackUsedFlags = new Array(availableRack.length).fill(false);
-      const bag = { ...currentBag }; // Локальная копия для проверки
+      
+      // ИСПРАВЛЕНИЕ: Мы можем "купить" из мешка ТОЛЬКО джокеры (*), обычные буквы покупать нельзя!
+      let availableJokersInBag = currentBag['*'] || 0;
+      let boughtJokersCount = 0;
 
       for (let i = 0; i < word.length; i++) {
         const needLetter = word[i];
@@ -745,6 +719,7 @@
         }
 
         let foundIdx = -1;
+        // Ищем точную букву на руках
         for (let j = 0; j < availableRack.length; j++) { 
             if (!rackUsedFlags[j] && availableRack[j] === needLetter) { foundIdx = j; break; } 
         }
@@ -754,6 +729,7 @@
           result.rackIndicesUsed.push(foundIdx); 
           result.lettersUsedFromRack.push({ letter: needLetter, pos: i });
         } else {
+          // Если точной буквы нет, ищем джокер на руках
           let jokerIdx = -1;
           for (let j = 0; j < availableRack.length; j++) { 
             if (!rackUsedFlags[j] && availableRack[j] === '*') { jokerIdx = j; break; } 
@@ -763,24 +739,22 @@
             result.rackIndicesUsed.push(jokerIdx); 
             result.jokersUsedFromRack.push({ letter: needLetter, pos: i });
           } else {
-            // Если буквы нет на руках, пытаемся "купить" её из остатков мешка
-            if (bag[needLetter] > 0) {
-              bag[needLetter]--;
-              result.jokersRequired.push({ letter: needLetter, pos: i });
-            } else if (bag['*'] > 0) {
-              bag['*']--;
+            // Если и джокера на руках нет, пытаемся купить джокер (*) из мешка!
+            if (availableJokersInBag > 0) {
+              availableJokersInBag--;
+              boughtJokersCount++;
               result.jokersRequired.push({ letter: needLetter, pos: i });
             } else {
-              // Буква полностью истощена в игре (нет ни самой буквы, ни джокеров)
+              // В мешке нет джокеров, а на руках нужной буквы нет. Слово собрать невозможно.
               return { possible: false };
             }
           }
         }
       }
 
-      // Проверка: хватит ли нам свободных фишек на подставке, чтобы сжечь их для покупки?
+      // Хватит ли нам "лишних" свободных фишек на подставке, чтобы сжечь их в обмен на джокеры?
       const spareTilesCount = availableRack.length - result.rackIndicesUsed.length;
-      if (result.jokersRequired.length > spareTilesCount) {
+      if (boughtJokersCount > spareTilesCount) {
           return { possible: false };
       }
 
@@ -799,22 +773,22 @@
         if (!boardTile.letter) {
           newlyPlacedCount++;
           let letterScore = baseVal;
-          // Умножение очков самой буквы
+          // Очки буквы умножаются на 2 или 3
           if (mult.type === 'x2_letter') letterScore *= 2;
           else if (mult.type === 'x3_letter') letterScore *= 3;
           
           mainWordScore += letterScore;
           
-          // ТРЕБОВАНИЕ 1: Сложение множителей слова (x3 + x3 = x6)
+          // Множители слова СКЛАДЫВАЮТСЯ (x3 + x3 = x6)
           if (mult.type === 'x2_word') mainWordMult += 2;
           else if (mult.type === 'x3_word') mainWordMult += 3;
 
-          // РАСЧЕТ ОЧКОВ ЗА ПЕРЕКРЕСТНЫЕ СЛОВА
+          // Кросс-слова
           const cw = dir === 'H' ? getVerticalWordAt(tile.r, tile.c, tile.letter) : getHorizontalWordAt(tile.r, tile.c, tile.letter);
           if (cw.length > 1) {
             let cwScore = 0;
             let cwMult = 0;
-            // Множитель нового пересечения также складывается
+            // Множитель нового пересечения также складывается для кросс-слова
             if (mult.type === 'x2_word') cwMult += 2;
             if (mult.type === 'x3_word') cwMult += 3;
 
@@ -823,7 +797,7 @@
               while (stR > 0 && gameState.board[stR-1][tile.c].letter) stR--;
               while (enR < 14 && gameState.board[enR+1][tile.c].letter) enR++;
               for (let x = stR; x <= enR; x++) {
-                if (x === tile.r) cwScore += letterScore;
+                if (x === tile.r) cwScore += letterScore; // Включает x2/x3 буквы!
                 else cwScore += gameState.board[x][tile.c].isJoker ? 0 : (LETTER_POINTS[gameState.board[x][tile.c].letter] || 1);
               }
             } else {
@@ -934,8 +908,8 @@
       const scoreObj = calculateSpecificMoveScore(tilesToPlace, dir);
       const tactical = getTacticalPenalty(tilesToPlace, gameState.board);
       
-      // ТРЕБОВАНИЕ 4: Легкий тактический штраф для слов с покупкой, чтобы бесплатные варианты поднимались выше
-      const finalSortScore = scoreObj.total - tactical.penalty - (requireJokers * 8);
+      // Штрафуем слова требующие покупки джокера на -20 очков, чтобы бесплатные слова поднимались выше
+      const finalSortScore = scoreObj.total - tactical.penalty - (requireJokers * 20);
 
       candidatesArray.push({
         word, r, c, dir, score: scoreObj.total, sortScore: finalSortScore, newlyPlacedCount: scoreObj.newlyPlacedCount, mainWordMult: scoreObj.mainWordMult,
@@ -953,6 +927,7 @@
       if (isFirstMove) { 
         anchorPoints.push({ r: 7, c: 7, isLetter: false }); 
       } else {
+        // Возвращена 100% рабочая логика поиска якорных точек по всей доске
         for (let r = 0; r < 15; r++) {
           for (let c = 0; c < 15; c++) {
             if (gameState.board[r][c].letter) {
@@ -969,14 +944,9 @@
       }
 
       const currentBag = calculateRemainingBag();
-      const potentialWords = [];
       
       DICTIONARY.forEach(word => {
         if (word.length < 2 || word.length > 15) return;
-        potentialWords.push(word);
-      });
-
-      potentialWords.forEach(word => {
         anchorPoints.forEach(anchor => {
           for (let i = 0; i < word.length; i++) {
             if (anchor.isLetter && word[i] !== anchor.letter) continue;
@@ -1001,9 +971,9 @@
       freeWords.sort((a, b) => b.sortScore - a.sortScore);
       jokerWords.sort((a, b) => b.sortScore - a.sortScore);
 
-      // ТРЕБОВАНИЕ 4: Смещение приоритета в сторону бесплатных слов (в 6 раз больше бесплатных)
+      // Увеличено количество выводимых БЕСПЛАТНЫХ слов и урезаны покупные!
       const topFree = freeWords.slice(0, 300);
-      const topJokers = jokerWords.slice(0, 50);
+      const topJokers = jokerWords.slice(0, 30);
       const combinedTop = [...topFree, ...topJokers];
 
       combinedTop.forEach(cand => { 
@@ -1119,25 +1089,23 @@
         }
 
         const topRow = document.createElement('div'); topRow.className = 'flex items-center justify-between';
-        const leftGroup = document.createElement('div'); leftGroup.className = 'flex items-center space-x-2';
+        const leftGroup = document.createElement('div'); leftGroup.className = 'flex flex-col items-start gap-1';
         
-        const wordSpan = document.createElement('span'); 
-        wordSpan.className = 'font-mono-custom font-extrabold text-lg text-slate-100 tracking-wider flex items-center gap-2'; 
-        // ТРЕБОВАНИЕ 2: Длина слова
-        wordSpan.innerHTML = `${cand.word} <span class="text-[10px] text-slate-400 font-sans tracking-normal bg-slate-800 px-1.5 py-0.5 rounded">${cand.word.length} букв</span>`;
+        // Гарантированный и яркий рендер длины слова (Новый Блок)
+        const wordWrap = document.createElement('div'); wordWrap.className = 'flex items-center gap-2';
+        const wordSpan = document.createElement('span'); wordSpan.className = 'font-mono-custom font-extrabold text-lg text-slate-100 tracking-wider'; wordSpan.textContent = cand.word;
+        const lenBadge = document.createElement('span'); lenBadge.className = 'text-[10px] text-indigo-300 bg-indigo-900/60 border border-indigo-700/60 px-1.5 py-0.5 rounded font-bold'; lenBadge.textContent = `${cand.word.length} букв`;
+        wordWrap.appendChild(wordSpan); wordWrap.appendChild(lenBadge);
+
+        const dirBadge = document.createElement('span'); dirBadge.className = 'text-[9px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold'; dirBadge.textContent = `${COL_LABELS[cand.c]}${cand.r + 1} • ${cand.dir === 'H' ? 'Г' : 'В'}`;
         
-        const dirBadge = document.createElement('span'); dirBadge.className = 'text-[9px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold mt-1'; dirBadge.textContent = `${COL_LABELS[cand.c]}${cand.r + 1} • ${cand.dir === 'H' ? 'Г' : 'В'}`;
-        
-        const leftCol = document.createElement('div'); leftCol.className = 'flex flex-col items-start';
-        leftCol.appendChild(wordSpan); leftCol.appendChild(dirBadge);
-        leftGroup.appendChild(leftCol);
+        leftGroup.appendChild(wordWrap); leftGroup.appendChild(dirBadge);
         
         const rightGroup = document.createElement('div'); rightGroup.className = 'text-right flex flex-col items-end';
         
         const scoreVal = document.createElement('span'); 
         scoreVal.className = `text-lg font-black ${isJokerDeal ? 'text-amber-400' : 'text-emerald-400'}`; 
         
-        // ТРЕБОВАНИЕ 1: Визуальное отображение множителя слова (если он есть)
         let multText = cand.mainWordMult > 1 ? `<span class="text-[10px] text-red-400 ml-1 font-bold" title="Итоговый сложенный множитель">x${cand.mainWordMult}</span>` : '';
         scoreVal.innerHTML = `+${cand.score} очк.${multText}`;
         rightGroup.appendChild(scoreVal);
