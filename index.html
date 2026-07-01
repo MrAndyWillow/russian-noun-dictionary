@@ -305,168 +305,150 @@ const ls = {
 };
 
 function App() {
-  const [dictionary, setDictionary] = useState(new Set());
+  // ── Словарь ──────────────────────────────────────────────────────────────
+  const [dictionary, setDictionary] = useState(() => {
+    try {
+      const raw = ls.get(DICT_KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+  });
   const [loaded, setLoaded] = useState(false);
+
+  // ── UI ───────────────────────────────────────────────────────────────────
   const [inputText, setInputText] = useState("");
   const [candidates, setCandidates] = useState([]);
   const [filter, setFilter] = useState("");
   const [toast, setToast] = useState(null);
-  const [deleteMode, setDeleteMode] = useState(false);       // режим выделения для удаления в списке
-  const [deleteSelected, setDeleteSelected] = useState(new Set()); // выбранные для удаления
-  const [deleteText, setDeleteText] = useState("");           // текст для массового удаления
-  const [showDeletePanel, setShowDeletePanel] = useState(false); // панель массового удаления
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [deleteSelected, setDeleteSelected] = useState(new Set());
+  const [deleteText, setDeleteText] = useState("");
+  const [showDeletePanel, setShowDeletePanel] = useState(false);
+
+  // ── Локальный файл (File System Access API, только Chrome/Edge) ──────────
   const [fileHandle, setFileHandle] = useState(null);
-  const [fileStatus, setFileStatus] = useState("none"); // none | reconnect | connected | saving | error
-  const [exportName, setExportName] = useState(FILE_NAME);
+  const [fileStatus, setFileStatus] = useState("none");
+  const [exportName, setExportName] = useState(() => ls.get("dict-export-name") || FILE_NAME);
+
+  // ── GitHub — инициализация СИНХРОННАЯ из localStorage ────────────────────
+  const [ghToken,  setGhToken]  = useState(() => ls.get("gh_token")  || "");
+  const [ghOwner,  setGhOwner]  = useState(() => ls.get("gh_owner")  || "");
+  const [ghRepo,   setGhRepo]   = useState(() => ls.get("gh_repo")   || "");
+  const [ghBranch, setGhBranch] = useState(() => ls.get("gh_branch") || "main");
+  const [ghPath,   setGhPath]   = useState(() => ls.get("gh_path")   || FILE_NAME);
+  const [ghSha,    setGhSha]    = useState(() => ls.get("gh_sha")    || "");
+  const [ghStatus, setGhStatus] = useState("none"); // none|loading|connected|syncing|error
   const [showSettings, setShowSettings] = useState(false);
-  const [ghConfig, setGhConfig] = useState({ owner: "", repo: "", branch: "main", path: FILE_NAME });
-  const [ghToken, setGhToken] = useState("");
-  const [ghStatus, setGhStatus] = useState("none"); // none | connected | saving | error
-  const [ghForm, setGhForm] = useState(null); // черновик настроек в открытой панели
+  const [ghForm,   setGhForm]   = useState(null);
+
   const fileInputRef = useRef(null);
+  const ghConnected = ghToken && ghOwner && ghRepo;
 
-  // загрузка из localStorage при старте
-  useEffect(() => {
-    (async () => {
-      try {
-        const raw = ls.get(DICT_KEY);
-        if (raw) {
-          const arr = JSON.parse(raw);
-          setDictionary(new Set(arr));
-        }
-      } catch (e) { /* словаря ещё нет */ }
+  // Сохраняем каждый параметр GitHub сразу при изменении
+  useEffect(() => { ls.set("gh_token",  ghToken);  }, [ghToken]);
+  useEffect(() => { ls.set("gh_owner",  ghOwner);  }, [ghOwner]);
+  useEffect(() => { ls.set("gh_repo",   ghRepo);   }, [ghRepo]);
+  useEffect(() => { ls.set("gh_branch", ghBranch); }, [ghBranch]);
+  useEffect(() => { ls.set("gh_path",   ghPath);   }, [ghPath]);
+  useEffect(() => { ls.set("gh_sha",    ghSha);    }, [ghSha]);
 
-      try {
-        const name = ls.get("dict-export-name");
-        if (name) setExportName(name);
-      } catch (e) { /* имя по умолчанию */ }
-
-      try {
-        const ghRaw = ls.get("gh-config");
-        if (ghRaw) {
-          const cfg = JSON.parse(ghRaw);
-          if (cfg && cfg.owner) {
-            setGhConfig(cfg);
-            const token = await idbGet("ghToken");
-            if (token) {
-              setGhToken(token);
-              setGhStatus("connected");
-            }
-          }
-        }
-      } catch (e) { /* GitHub не настроен */ }
-
-      if (FS_SUPPORTED) {
-        try {
-          const handle = await idbGet("dictFileHandle");
-          if (handle) {
-            const perm = await handle.queryPermission({ mode: "readwrite" });
-            if (perm === "granted") {
-              setFileHandle(handle);
-              setFileStatus("connected");
-              await syncFromHandle(handle, true);
-            } else {
-              setFileHandle(handle);
-              setFileStatus("reconnect");
-            }
-          }
-        } catch (e) { /* доступ к диску недоступен в этом контексте */ }
-      }
-
-      setLoaded(true);
-    })();
-  }, []);
-
-  const persist = useCallback((set) => {
-    try {
-      ls.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))));
-    } catch (e) { console.error("Не удалось сохранить словарь:", e); }
-  }, []);
-
-  const writeToFile = useCallback(async (handle, set) => {
-    if (!handle) return;
-    try {
-      setFileStatus("saving");
-      const perm = await handle.queryPermission({ mode: "readwrite" });
-      if (perm !== "granted") { setFileStatus("reconnect"); return; }
-      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-      const writable = await handle.createWritable();
-      await writable.write(text);
-      await writable.close();
-      setFileStatus("connected");
-    } catch (e) {
-      console.error("Не удалось записать в файл:", e);
-      setFileStatus("error");
-    }
-  }, []);
-
-  const utf8ToBase64 = (str) => {
-    // btoa не понимает кириллицу напрямую — кодируем через UTF-8
+  // ── Кодирование/декодирование UTF-8 ←→ base64 ────────────────────────────
+  const b64encode = (str) => {
     const bytes = new TextEncoder().encode(str);
-    let bin = "";
-    bytes.forEach(b => { bin += String.fromCharCode(b); });
+    let bin = ""; bytes.forEach(b => { bin += String.fromCharCode(b); });
     return btoa(bin);
   };
+  const b64decode = (b64) => {
+    const bin = atob(b64.replace(/\s/g, ""));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder("utf-8").decode(bytes);
+  };
 
-  // путь к файлу в API — каждый сегмент кодируем отдельно
-  const ghApiUrl = useCallback((cfg) => {
-    const segments = (cfg.path || FILE_NAME).split("/").map(encodeURIComponent).join("/");
-    return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${segments}`;
-  }, []);
+  const ghUrl = () => {
+    const p = ghPath.trim().replace(/^\/+/, "").split("/").map(encodeURIComponent).join("/");
+    return `https://api.github.com/repos/${ghOwner.trim()}/${ghRepo.trim()}/contents/${p}`;
+  };
+  const ghHdrs = (token) => ({
+    Authorization: `token ${(token || ghToken).trim()}`,
+    Accept: "application/vnd.github.v3+json",
+  });
 
-  const ghHeaders = useCallback((token) => ({
-    Authorization: `Bearer ${token}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  }), []);
-
-  // Проверяет доступность репозитория и права токена, возвращает {ok, message}
-  const testGhConnection = useCallback(async (cfg, token) => {
-    if (!token || !cfg.owner || !cfg.repo) return { ok: false, message: "Заполните владельца, репозиторий и токен" };
+  // ── Pull — загрузка файла из GitHub ──────────────────────────────────────
+  const pullFromGitHub = useCallback(async (quiet = false) => {
+    if (!ghToken || !ghOwner || !ghRepo) return;
+    if (!quiet) setGhStatus("loading");
     try {
-      const url = ghApiUrl(cfg);
-      const res = await fetch(`${url}?ref=${encodeURIComponent(cfg.branch || "main")}`, {
-        headers: ghHeaders(token),
+      const metaRes = await fetch(`${ghUrl()}?ref=${encodeURIComponent(ghBranch)}&_t=${Date.now()}`, {
+        headers: ghHdrs(),
       });
-      if (res.ok || res.status === 404) return { ok: true, message: null }; // 404 = файла ещё нет, но доступ есть
-      const body = await res.json().catch(() => ({}));
-      if (res.status === 401) return { ok: false, message: "Токен недействителен или истёк (401)" };
-      if (res.status === 403) return { ok: false, message: "Токен не имеет доступа к этому репозиторию (403)" };
-      if (res.status === 422) return { ok: false, message: "Неверная ветка или путь (422)" };
-      return { ok: false, message: body.message || `Ошибка ${res.status}` };
-    } catch (e) {
-      if (e.name === "TypeError" && e.message.includes("fetch")) {
-        return { ok: false, message: "Нет доступа к api.github.com — проверьте сеть / DNS" };
+      if (metaRes.status === 404) {
+        setGhStatus("connected"); setGhSha("");
+        if (!quiet) showToast("Файл ещё не создан в репозитории");
+        return;
       }
-      return { ok: false, message: e.message };
-    }
-  }, [ghApiUrl, ghHeaders]);
+      if (!metaRes.ok) {
+        const body = await metaRes.json().catch(() => ({}));
+        if (metaRes.status === 401) throw new Error("Токен недействителен (401)");
+        if (metaRes.status === 403) throw new Error("Нет доступа к репозиторию (403)");
+        throw new Error(body.message || `Ошибка ${metaRes.status}`);
+      }
+      const meta = await metaRes.json();
+      setGhSha(meta.sha);
 
-  const pushToGitHub = useCallback(async (set, cfgOverride, tokenOverride) => {
-    const cfg = cfgOverride || ghConfig;
-    const token = tokenOverride || ghToken;
-    if (!token || !cfg.owner || !cfg.repo) return;
-    setGhStatus("saving");
-    const url = ghApiUrl(cfg);
-    const hdrs = ghHeaders(token);
-    try {
-      // читаем sha существующего файла (нужен для обновления)
-      let sha = null;
-      const getRes = await fetch(`${url}?ref=${encodeURIComponent(cfg.branch || "main")}`, { headers: hdrs });
-      if (getRes.ok) {
-        sha = (await getRes.json()).sha;
-      } else if (getRes.status !== 404) {
-        const body = await getRes.json().catch(() => ({}));
-        throw new Error(body.message || `Не удалось прочитать файл (${getRes.status})`);
+      let text = "";
+      if (meta.size < 900000 && meta.content) {
+        // небольшой файл — контент уже в ответе
+        text = b64decode(meta.content);
+      } else {
+        // большой файл (>900KB) — используем Git Blobs API
+        const blobRes = await fetch(
+          `https://api.github.com/repos/${ghOwner.trim()}/${ghRepo.trim()}/git/blobs/${meta.sha}`,
+          { headers: ghHdrs() }
+        );
+        if (!blobRes.ok) throw new Error(`Ошибка загрузки большого файла (${blobRes.status})`);
+        const blob = await blobRes.json();
+        text = b64decode(blob.content);
       }
+
+      const words = text.split(/[\r\n]+/)
+        .map(w => w.trim().toLowerCase())
+        .filter(w => w && /^[а-яёa-z0-9\-]+$/.test(w));
+
+      setDictionary(new Set(words));
+      ls.set(DICT_KEY, JSON.stringify(words));
+      setGhStatus("connected");
+      setLoaded(true);
+      if (!quiet) showToast(`Загружено из GitHub: ${words.length} слов`);
+    } catch (e) {
+      console.error("GitHub pull:", e);
+      setGhStatus("error");
+      let msg = e.message;
+      if (msg.includes("Failed to fetch")) msg = "Нет доступа к api.github.com — проверьте сеть/DNS";
+      if (!quiet) showToast(`GitHub: ${msg}`);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ghToken, ghOwner, ghRepo, ghBranch, ghPath]);
+
+  // ── Push — запись файла в GitHub ─────────────────────────────────────────
+  const pushToGitHub = useCallback(async (set) => {
+    if (!ghToken || !ghOwner || !ghRepo) return;
+    setGhStatus("syncing");
+    try {
+      // Всегда берём свежий sha перед записью
+      let sha = ghSha;
+      const getRes = await fetch(`${ghUrl()}?ref=${encodeURIComponent(ghBranch)}&_t=${Date.now()}`, {
+        headers: ghHdrs(),
+      });
+      if (getRes.ok) { const d = await getRes.json(); sha = d.sha; setGhSha(d.sha); }
+
       const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
-      const putRes = await fetch(url, {
+      const putRes = await fetch(ghUrl(), {
         method: "PUT",
-        headers: { ...hdrs, "Content-Type": "application/json" },
+        headers: { ...ghHdrs(), "Content-Type": "application/json" },
         body: JSON.stringify({
           message: `dict: ${set.size} words`,
-          content: utf8ToBase64(text),
-          branch: cfg.branch || "main",
+          content: b64encode(text),
+          branch: ghBranch,
           ...(sha ? { sha } : {}),
         }),
       });
@@ -474,42 +456,71 @@ function App() {
         const body = await putRes.json().catch(() => ({}));
         throw new Error(body.message || `Ошибка записи (${putRes.status})`);
       }
+      const data = await putRes.json();
+      if (data?.content?.sha) setGhSha(data.content.sha);
       setGhStatus("connected");
     } catch (e) {
-      console.error("GitHub:", e);
+      console.error("GitHub push:", e);
       setGhStatus("error");
       showToast(`GitHub: ${e.message}`);
     }
-  }, [ghToken, ghConfig, ghApiUrl, ghHeaders]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ghToken, ghOwner, ghRepo, ghBranch, ghPath, ghSha]);
 
-  // единая точка изменения словаря: обновляет state, кэш в браузере и,
-  // если подключён локальный файл и/или репозиторий GitHub — пишет туда же
-  const saveDictionary = useCallback(async (next, handleOverride) => {
-    setDictionary(next);
-    await persist(next);
-    const h = handleOverride !== undefined ? handleOverride : fileHandle;
-    if (h) await writeToFile(h, next);
-    if (ghToken && ghConfig.owner && ghConfig.repo) await pushToGitHub(next);
-  }, [fileHandle, persist, writeToFile, ghToken, ghConfig, pushToGitHub]);
+  // ── Auto-pull при старте если настройки уже есть ─────────────────────────
+  useEffect(() => {
+    const hasGh = ghToken && ghOwner && ghRepo;
+    if (hasGh) {
+      pullFromGitHub(true).then(() => setLoaded(true));
+    } else {
+      setLoaded(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const syncFromHandle = useCallback(async (handle, silent) => {
+  // ── File System Access API (Chrome/Edge на компьютере) ────────────────────
+  useEffect(() => {
+    if (!FS_SUPPORTED) return;
+    (async () => {
+      try {
+        const handle = await idbGet("dictFileHandle");
+        if (handle) {
+          const perm = await handle.queryPermission({ mode: "readwrite" });
+          setFileHandle(handle);
+          setFileStatus(perm === "granted" ? "connected" : "reconnect");
+          if (perm === "granted") await syncFromHandle(handle, true);
+        }
+      } catch (e) { /* нет доступа */ }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const persist = (set) => {
+    ls.set(DICT_KEY, JSON.stringify([...set].sort((a, b) => a.localeCompare(b, "ru"))));
+  };
+
+  const writeToFile = async (handle, set) => {
+    if (!handle) return;
+    try {
+      setFileStatus("saving");
+      const perm = await handle.queryPermission({ mode: "readwrite" });
+      if (perm !== "granted") { setFileStatus("reconnect"); return; }
+      const text = [...set].sort((a, b) => a.localeCompare(b, "ru")).join("\n") + "\n";
+      const writable = await handle.createWritable();
+      await writable.write(text); await writable.close();
+      setFileStatus("connected");
+    } catch (e) { console.error(e); setFileStatus("error"); }
+  };
+
+  const syncFromHandle = async (handle, silent) => {
     try {
       const file = await handle.getFile();
-      const text = await file.text();
-      const words = text.split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
-      setDictionary(prev => {
-        const merged = new Set(prev);
-        words.forEach(w => merged.add(w));
-        persist(merged);
-        writeToFile(handle, merged);
-        return merged;
-      });
+      const words = (await file.text()).split(/\r?\n/).map(w => w.trim().toLowerCase()).filter(Boolean);
+      const merged = new Set(words);
+      setDictionary(merged); persist(merged);
       if (!silent) showToast("Словарь синхронизирован с файлом на диске");
-    } catch (e) {
-      console.error(e);
-      setFileStatus("error");
-    }
-  }, [persist, writeToFile]);
+    } catch (e) { console.error(e); setFileStatus("error"); }
+  };
 
   const connectFile = async () => {
     try {
@@ -517,77 +528,58 @@ function App() {
         types: [{ description: "Текстовый файл", accept: { "text/plain": [".txt"] } }],
       });
       const perm = await handle.requestPermission({ mode: "readwrite" });
-      if (perm !== "granted") { showToast("Нет разрешения на запись в файл"); return; }
+      if (perm !== "granted") { showToast("Нет разрешения на запись"); return; }
       await idbSet("dictFileHandle", handle);
-      setFileHandle(handle);
-      setFileStatus("connected");
+      setFileHandle(handle); setFileStatus("connected");
       updateExportName(handle.name);
       await syncFromHandle(handle, false);
-    } catch (e) {
-      if (e.name !== "AbortError") { console.error(e); showToast("Не удалось подключить файл"); }
-    }
+    } catch (e) { if (e.name !== "AbortError") showToast("Не удалось подключить файл"); }
   };
 
   const reconnectFile = async () => {
     if (!fileHandle) return;
-    try {
-      const perm = await fileHandle.requestPermission({ mode: "readwrite" });
-      if (perm === "granted") {
-        setFileStatus("connected");
-        await syncFromHandle(fileHandle, false);
-      } else {
-        showToast("Доступ к файлу не подтверждён");
-      }
-    } catch (e) { console.error(e); }
+    const perm = await fileHandle.requestPermission({ mode: "readwrite" }).catch(() => "denied");
+    if (perm === "granted") { setFileStatus("connected"); await syncFromHandle(fileHandle, false); }
+    else showToast("Доступ к файлу не подтверждён");
   };
 
   const disconnectFile = async () => {
-    setFileHandle(null);
-    setFileStatus("none");
+    setFileHandle(null); setFileStatus("none");
     await idbSet("dictFileHandle", null);
   };
 
-  const openSettings = () => {
-    setGhForm({ ...ghConfig, token: ghToken });
-    setShowSettings(true);
-  };
-
-  const saveGhSettings = async () => {
-    const owner = ghForm.owner.trim();
-    const repo = ghForm.repo.trim();
+  // Сохраняем настройки GitHub — без async-проверки (убирает чёрный экран).
+  // Валидация происходит при auto-pull: если токен неверный — status станет error.
+  const saveGhSettings = () => {
+    if (!ghForm) return;
+    const token  = (ghForm.token  || "").trim();
+    const owner  = (ghForm.owner  || "").trim();
+    const repo   = (ghForm.repo   || "").trim();
     const branch = (ghForm.branch || "main").trim();
-    const path = (ghForm.path || FILE_NAME).trim();
-    const token = (ghForm.token || "").trim() || ghToken;
-    if (!owner || !repo || !token) {
-      showToast("Заполните владельца, репозиторий и токен");
-      return;
-    }
-    const cfg = { owner, repo, branch, path };
-    setGhStatus("saving");
+    const path   = (ghForm.path   || FILE_NAME).trim();
+    if (!owner || !repo || !token) { showToast("Заполните владельца, репозиторий и токен"); return; }
+    setGhToken(token); setGhOwner(owner); setGhRepo(repo);
+    setGhBranch(branch); setGhPath(path); setGhSha("");
     setShowSettings(false);
-    const { ok, message } = await testGhConnection(cfg, token);
-    if (!ok) {
-      setGhStatus("error");
-      showToast(`GitHub: ${message}`);
-      setGhForm({ ...cfg, token });
-      setShowSettings(true);
-      return;
-    }
-    setGhConfig(cfg);
-    setGhToken(token);
-    setGhStatus("connected");
-    ls.set("gh-config", JSON.stringify(cfg));
-    await idbSet("ghToken", token);
-    showToast(`GitHub подключён: ${owner}/${repo}`);
+    setGhStatus("loading");
+    // Сразу тянем файл с новыми настройками
+    setTimeout(() => {
+      pullFromGitHub(false).catch(e => { setGhStatus("error"); showToast(`GitHub: ${e.message}`); });
+    }, 0);
   };
 
-  const disconnectGh = async () => {
-    setGhToken("");
-    setGhConfig({ owner: "", repo: "", branch: "main", path: FILE_NAME });
-    setGhStatus("none");
-    ls.set("gh-config", "");
-    await idbSet("ghToken", null);
-    setShowSettings(false);
+  const disconnectGh = () => {
+    setGhToken(""); setGhOwner(""); setGhRepo("");
+    setGhBranch("main"); setGhPath(FILE_NAME); setGhSha("");
+    setGhStatus("none"); setShowSettings(false);
+  };
+
+  // Единая точка изменения словаря
+  const saveDictionary = async (next) => {
+    setDictionary(next);
+    persist(next);
+    if (fileHandle) await writeToFile(fileHandle, next);
+    if (ghConnected) await pushToGitHub(next);
   };
 
   const showToast = (text) => {
@@ -755,17 +747,17 @@ function App() {
             )}
 
             {ghStatus === "connected" && (
-              <Badge tone="amber"><Icon.Cloud className="h-3 w-3 mr-1" /> {ghConfig.owner}/{ghConfig.repo} · публикуется</Badge>
+              <Badge tone="amber"><Icon.Check className="h-3 w-3 mr-1" /> {ghOwner}/{ghRepo}</Badge>
             )}
-            {ghStatus === "saving" && (
-              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> Публикация…</Badge>
+            {(ghStatus === "syncing" || ghStatus === "loading") && (
+              <Badge tone="default"><Icon.Loader className="h-3 w-3 mr-1 animate-spin" /> {ghStatus === "loading" ? "Загрузка…" : "Синхронизация…"}</Badge>
             )}
             {ghStatus === "error" && (
-              <Button variant="outline" size="sm" onClick={() => pushToGitHub(dictionary)} className="!text-red-300 !border-red-900/60">
-                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка публикации · повторить
+              <Button variant="outline" size="sm" onClick={() => pullFromGitHub(false)} className="!text-red-300 !border-red-900/60">
+                <Icon.Alert className="h-3.5 w-3.5" /> Ошибка · повторить pull
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={openSettings} title="Настроить публикацию в GitHub">
+            <Button variant="ghost" size="sm" onClick={() => { setGhForm({ owner: ghOwner, repo: ghRepo, branch: ghBranch, path: ghPath, token: ghToken }); setShowSettings(true); }} title="Настроить публикацию в GitHub">
               <Icon.Settings className="h-3.5 w-3.5" />
             </Button>
 
@@ -978,11 +970,8 @@ function App() {
 
         <p className="text-center text-xs text-ink-600 pb-4">
           {ghStatus === "connected"
-            ? `Каждое изменение словаря сразу коммитится в ${ghConfig.owner}/${ghConfig.repo} (${ghConfig.path}) — это работает и на iPad. `
-            : `Откройте настройки (значок шестерёнки) и подключите репозиторий Эрудита на GitHub — тогда словарь будет публиковаться туда автоматически, в том числе с iPad. `}
-          {FS_SUPPORTED && (fileStatus === "none"
-            ? "На компьютере дополнительно можно «Подключить файл на диске» для прямой записи без сети."
-            : `Локальный файл «${fileHandle?.name}» синхронизируется автоматически.`)}
+            ? `Словарь синхронизирован с ${ghOwner}/${ghRepo} · ${ghPath}. Изменения публикуются автоматически.`
+            : `Откройте настройки (⚙) и подключите репозиторий Эрудита — тогда словарь будет загружаться и сохраняться в GitHub, в том числе с iPad.`}
         </p>
       </main>
 
@@ -1033,21 +1022,20 @@ function App() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-ink-400 mb-1 block">Personal Access Token (fine-grained, доступ только к Contents этого репозитория)</label>
+                <label className="text-xs text-ink-400 mb-1 block">Personal Access Token</label>
                 <input value={ghForm.token} onChange={(e) => setGhForm({ ...ghForm, token: e.target.value })}
-                  type="password" placeholder="github_pat_…" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
+                  type="password" placeholder="github_pat_… или ghp_…" className="w-full bg-ink-950 border border-ink-700 rounded-lg px-3 h-9 text-sm font-mono focus:border-amber-400/60" />
                 <p className="text-[11px] text-ink-500 mt-1.5 leading-relaxed">
-                  Токен хранится только локально на этом устройстве (не синхронизируется). Создайте его на странице
-                  github.com/settings/tokens?type=beta — ограничьте доступ только этим репозиторием и правом «Contents: Read and write».
+                  Создайте на github.com/settings/tokens — подойдёт как classic token с правом <code className="text-amber-300">repo</code>, так и fine-grained с <code className="text-amber-300">Contents: Read and write</code> для конкретного репозитория.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center justify-between mt-5">
-              <Button variant="ghost" size="sm" onClick={disconnectGh} disabled={!ghToken && !ghConfig.owner}>Отключить</Button>
+              <Button variant="ghost" size="sm" onClick={disconnectGh} disabled={!ghToken}>Отключить</Button>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setShowSettings(false)}>Отмена</Button>
-                <Button size="sm" onClick={saveGhSettings} disabled={!ghForm.owner || !ghForm.repo}>Сохранить</Button>
+                <Button size="sm" onClick={saveGhSettings} disabled={!ghForm || !ghForm.owner || !ghForm.repo || !ghForm.token}>Сохранить и загрузить</Button>
               </div>
             </div>
           </Card>
